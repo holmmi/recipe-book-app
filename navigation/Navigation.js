@@ -25,7 +25,7 @@ const RecipesStack = () => {
 const Tab = createBottomTabNavigator()
 
 const Navigation = () => {
-  const { isLoggedIn } = useContext(MainContext)
+  const { isLogged } = useContext(MainContext)
 
   const { t } = useTranslation()
 
@@ -69,7 +69,7 @@ const Navigation = () => {
           component={Search}
           options={{ title: t('navigation.bottom.search') }}
         />
-        {isLoggedIn && (
+        {isLogged && (
           <Tab.Screen
             name='FavoritesTab'
             component={Favorites}
