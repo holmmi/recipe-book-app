@@ -6,7 +6,8 @@ const MainContext = React.createContext()
 
 const MainProvider = (props) => {
   const [isLogged, setIsLogged] = useState(false)
-  const [userDetails, setUserDetails] = useState(null)
+  const [userDetails, setUserDetails] = useState({})
+  const [updateUserDetails, setUpdateUserDetails] = useState(true)
 
   useEffect(() => {
     const getUserWithToken = async () => {
@@ -16,12 +17,21 @@ const MainProvider = (props) => {
         setIsLogged(true)
       }
     }
-    getUserWithToken()
-  }, [])
+    if (updateUserDetails) {
+      getUserWithToken()
+      setUpdateUserDetails(false)
+    }
+  }, [updateUserDetails])
 
   return (
     <MainContext.Provider
-      value={{ isLogged, setIsLogged, userDetails, setUserDetails }}
+      value={{
+        isLogged,
+        setIsLogged,
+        userDetails,
+        setUserDetails,
+        setUpdateUserDetails,
+      }}
     >
       {props.children}
     </MainContext.Provider>

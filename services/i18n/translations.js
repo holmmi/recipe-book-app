@@ -7,6 +7,10 @@ const resources = Object.freeze({
         register: 'Rekisteröidy',
         alreadyAccount: 'Onko sinulla jo tili?',
       },
+      avatar: {
+        choose: 'Valitse Avatar',
+        delete: 'Poista Avatar',
+      },
       common: {
         ok: 'Ok',
       },
@@ -58,6 +62,14 @@ const resources = Object.freeze({
           recipes: 'Reseptit',
           favorites: 'Suosikit',
         },
+      },
+      profile: {
+        email: 'Sähköpostiosoite',
+        name: 'Nimi',
+        username: 'Käyttäjänimi',
+        publications: 'Julkaisuja',
+        favorites: 'Suosikkeja',
+        likes: 'Tykkäyksiä',
       },
     },
   },
