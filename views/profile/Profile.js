@@ -3,6 +3,7 @@ import React, { useLayoutEffect, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, View, ScrollView } from 'react-native'
 import {
+  ActivityIndicator,
   Button,
   Portal,
   Modal,
@@ -28,9 +29,17 @@ const Profile = ({ navigation }) => {
     message: '',
   })
   const [editMode, setEditMode] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const { t } = useTranslation()
-  const { control, handleSubmit, register, reset, setValue, unregister } =
-    useForm()
+  const {
+    control,
+    handleSubmit,
+    register,
+    reset,
+    setValue,
+    unregister,
+    formState,
+  } = useForm()
 
   const switchForm = () => {
     setShowLoginForm(!showLoginForm)
@@ -54,40 +63,56 @@ const Profile = ({ navigation }) => {
   }
 
   const updateProfile = async (data) => {
-    const { email, file, full_name, username } = data
-    setUpdateUserDetails(
-      await updateUserDetails({ email, full_name, username })
-    )
-    if (file) {
-      await uploadImageWithTag('avatar', file, 'Avatar')
+    setIsSaving(true)
+    const updatableFields = {}
+    const fields = Object.keys(formState.dirtyFields)
+    fields.forEach((field) => {
+      updatableFields[field] = data[field]
+    })
+    if (Object.keys(updatableFields).length > 0) {
+      setUpdateUserDetails(await updateUserDetails(updatableFields))
+    }
+    if (data?.file) {
+      await uploadImageWithTag('avatar', data.file, 'Avatar')
     }
     setEditMode(false)
+    setIsSaving(false)
   }
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <View style={styles.headerRight}>
-          <IconButton
-            icon={editMode ? 'close-circle-outline' : 'pencil'}
-            color='white'
-            onPress={() => {
-              setEditMode(!editMode)
-              reset()
-            }}
-          />
-          {editMode && (
-            <IconButton
-              icon='content-save-outline'
-              color='white'
-              onPress={handleSubmit(updateProfile)}
-            />
+          {isSaving ? (
+            <ActivityIndicator color='white' style={{ marginRight: 10 }} />
+          ) : (
+            <>
+              <IconButton
+                icon={editMode ? 'close-circle-outline' : 'pencil'}
+                color='white'
+                onPress={() => {
+                  setEditMode(!editMode)
+                  reset()
+                }}
+              />
+              {editMode && (
+                <IconButton
+                  icon='content-save-outline'
+                  color='white'
+                  onPress={handleSubmit(updateProfile)}
+                />
+              )}
+              <IconButton
+                icon='logout-variant'
+                color='white'
+                onPress={logout}
+              />
+            </>
           )}
-          <IconButton icon='logout-variant' color='white' onPress={logout} />
         </View>
       ),
     })
-  }, [navigation, editMode])
+  }, [navigation, editMode, isSaving])
 
   return (
     <ScrollView style={styles.container}>

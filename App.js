@@ -2,6 +2,7 @@ import React from 'react'
 import { MainProvider } from './context/MainProvider'
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 import Navigation from './navigation/Navigation'
+import { StatusBar } from 'expo-status-bar'
 import './services/i18n/i18n'
 
 const theme = {
@@ -17,6 +18,7 @@ const App = () => {
   return (
     <MainProvider>
       <PaperProvider theme={theme}>
+        <StatusBar style='light' />
         <Navigation />
       </PaperProvider>
     </MainProvider>
