@@ -54,6 +54,13 @@ const resources = Object.freeze({
           success: 'Rekisteröityminen onnistui. Ole hyvä, ja kirjaudu sisään.',
           submit: 'Rekisteröidy',
         },
+        search: {
+          recipeName: 'Reseptin nimi',
+          diet: 'Ruokavalio (voit valita useamman)',
+          ingredients: 'Ainekset (voit valita useamman)',
+          preparationTime: 'Valmistusaika (min)',
+          searchButton: 'Hae',
+        },
       },
       navigation: {
         bottom: {
@@ -70,6 +77,11 @@ const resources = Object.freeze({
         publications: 'Julkaisuja',
         favorites: 'Suosikkeja',
         likes: 'Tykkäyksiä',
+      },
+      diet: {
+        glutenfree: 'gluteeniton',
+        vegan: 'vegaaninen',
+        vegetarian: 'kasvis',
       },
     },
   },
