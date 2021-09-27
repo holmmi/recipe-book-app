@@ -6,7 +6,7 @@ const Search = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.searchContainer}>
-        <SearchForm></SearchForm>
+        <SearchForm />
       </View>
     </SafeAreaView>
   )
