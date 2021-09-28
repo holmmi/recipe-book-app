@@ -9,7 +9,7 @@ import {
   Chip,
   Text,
 } from 'react-native-paper'
-import { useForm } from 'react-hook-form'
+import { set, useForm } from 'react-hook-form'
 import { apiLogin } from '../hooks/ApiHooks'
 import { MainContext } from '../context/MainProvider'
 import PropTypes from 'prop-types'
@@ -26,29 +26,46 @@ const SearchForm = () => {
   const [diets, setDiets] = useState('')
   const [recipeName, setRecipeName] = useState('')
   const [ingredient, setIngredient] = useState('')
-  const [ingredients, setIngredients] = useState([])
-  const [chips, setChips] = useState([])
+  const [time, setTime] = useState('')
+  const [chips, setChips] = useState(null)
+  //let ingredients = ['ghfhghg']
 
   const onSubmit = () => {
     console.log('data', inputs)
-    console.log('diets', diets)
   }
 
-  /*const init = () => {
-    setIn
-  }*/
+  const addIngredient = () => {
+    let list = []
+    console.log(inputs.ingredients.indexOf(ingredient))
+    if (inputs.ingredients.indexOf(ingredient) === -1) {
+      list = inputs.ingredients.concat(ingredient)
+      updateIngredients(list)
+    }
+  }
 
-  //const ingredients = []
+  const deleteIngredient = (item) => {
+    let list = []
+    let index = inputs.ingredients.indexOf(item)
+    if (index !== -1) {
+      list = inputs.ingredients.splice(index, 1)
+    }
+    updateIngredients(list)
+  }
 
-  //let chips = []
-
-  const updateIngredients = () => {
-    ingredients.push(ingredient)
-    handleInputChange('ingredients', ingredients)
-    //console.log(ingredients)
-    console.log(inputs)
-    setChips(ingredients.map((item) => <Chip icon='information'>{item}</Chip>))
-    //console.log(chips)
+  const updateIngredients = (list) => {
+    handleInputChange('ingredients', list)
+    setChips(
+      list.map((item, index) => (
+        <Chip
+          key={item}
+          icon='information'
+          style={styles.chip}
+          onClose={() => deleteIngredient(item)}
+        >
+          {item}
+        </Chip>
+      ))
+    )
   }
 
   const dietList = [
@@ -65,10 +82,6 @@ const SearchForm = () => {
       value: t('diet.vegetarian'),
     },
   ]
-
-  /*useEffect(() => {
-    init()
-  }, [])*/
 
   return (
     <>
@@ -103,14 +116,15 @@ const SearchForm = () => {
       />
 
       <TextInput
-        label={t('form.search.recipeName')}
+        label={t('form.search.ingredients')}
         value={ingredient}
         style={styles.inputBox}
         onChangeText={(text) => {
           setIngredient(text)
         }}
       />
-      <Text>{chips}</Text>
+
+      <>{chips}</>
 
       <Button
         mode='contained'
@@ -118,10 +132,21 @@ const SearchForm = () => {
         color='#F6AE2D'
         style={styles.button}
         labelStyle={{ color: 'white' }}
-        onPress={updateIngredients}
+        onPress={addIngredient}
       >
         Lisää ainesosa
       </Button>
+
+      <TextInput
+        label={t('form.search.preparationTime')}
+        keyboardType='number-pad'
+        value={time}
+        style={styles.inputBox}
+        onChangeText={(txt) => {
+          handleInputChange('time', txt)
+          setTime(txt)
+        }}
+      />
 
       <Button
         mode='contained'
@@ -151,6 +176,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: 'white',
     width: '100%',
+  },
+  chip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
 })
 

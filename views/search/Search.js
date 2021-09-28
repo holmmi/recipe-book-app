@@ -1,14 +1,14 @@
 import React from 'react'
-import { SafeAreaView, StyleSheet, View } from 'react-native'
+import { SafeAreaView, StyleSheet, View, ScrollView } from 'react-native'
 import SearchForm from '../../components/SearchForm'
 
 const Search = () => {
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.searchContainer}>
         <SearchForm />
       </View>
-    </SafeAreaView>
+    </ScrollView>
   )
 }
 

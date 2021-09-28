@@ -5,7 +5,7 @@ const useSearchForm = (callback) => {
     recipe_name: '',
     description: '',
     diets: '',
-    ingredients: '',
+    ingredients: [],
     time: '',
   })
 
