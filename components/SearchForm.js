@@ -1,37 +1,35 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { StyleSheet, View } from 'react-native'
-import {
-  Headline,
-  Button,
-  List,
-  TextInput,
-  Chip,
-  Text,
-} from 'react-native-paper'
-import { set, useForm } from 'react-hook-form'
-import { apiLogin } from '../hooks/ApiHooks'
-import { MainContext } from '../context/MainProvider'
+import React, { useContext, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
+import { StyleSheet } from 'react-native'
+import { Headline, Button, TextInput, Chip } from 'react-native-paper'
+import { MainContext } from '../context/MainProvider'
 import DropDown from 'react-native-paper-dropdown'
 import useSearchForm from '../hooks/SearchHooks'
-import { render } from 'react-dom'
 
-const SearchForm = () => {
-  const [showDropDown, setShowDropDown] = useState(false)
-  const { setIsLogged, setUserDetails } = useContext(MainContext)
+const SearchForm = ({ navigation }) => {
   const { t } = useTranslation()
-  const { inputs, handleInputChange } = useSearchForm()
+  const { inputs, setInputs, handleInputChange } = useSearchForm()
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false)
   const [diets, setDiets] = useState('')
   const [recipeName, setRecipeName] = useState('')
   const [ingredient, setIngredient] = useState('')
   const [time, setTime] = useState('')
   const [chips, setChips] = useState(null)
-  //let ingredients = ['ghfhghg']
 
   const onSubmit = () => {
+    navigation.navigate('Recipes')
     console.log('data', inputs)
+  }
+
+  const resetForm = () => {
+    setInputs({
+      recipe_name: '',
+      diets: '',
+      ingredients: [],
+      time: '',
+    })
+    updateIngredients([])
   }
 
   const addIngredient = () => {
@@ -83,6 +81,10 @@ const SearchForm = () => {
     },
   ]
 
+  useEffect(() => {
+    resetForm()
+  }, [])
+
   return (
     <>
       <Headline style={styles.headline}>
@@ -119,6 +121,7 @@ const SearchForm = () => {
         label={t('form.search.ingredients')}
         value={ingredient}
         style={styles.inputBox}
+        onSubmitEditing={addIngredient}
         onChangeText={(text) => {
           setIngredient(text)
         }}
@@ -134,7 +137,7 @@ const SearchForm = () => {
         labelStyle={{ color: 'white' }}
         onPress={addIngredient}
       >
-        Lisää ainesosa
+        {t('form.search.add')}
       </Button>
 
       <TextInput
@@ -184,5 +187,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
 })
+
+SearchForm.propTypes = {
+  navigation: PropTypes.object.isRequired,
+}
 
 export default SearchForm

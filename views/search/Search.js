@@ -1,12 +1,13 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { SafeAreaView, StyleSheet, View, ScrollView } from 'react-native'
 import SearchForm from '../../components/SearchForm'
 
-const Search = () => {
+const Search = ({ navigation }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.searchContainer}>
-        <SearchForm />
+        <SearchForm navigation={navigation} />
       </View>
     </ScrollView>
   )
@@ -26,5 +27,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
 })
+
+Search.propTypes = {
+  navigation: PropTypes.object,
+}
 
 export default Search

@@ -22,6 +22,15 @@ const RecipesStack = () => {
   )
 }
 
+const SearchStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name='Search' component={Search} />
+      <Stack.Screen name='RecipesSearch' component={RecipesStack} />
+    </Stack.Navigator>
+  )
+}
+
 const Tab = createBottomTabNavigator()
 
 const Navigation = () => {
@@ -66,7 +75,7 @@ const Navigation = () => {
         />
         <Tab.Screen
           name='SearchTab'
-          component={Search}
+          component={SearchStack}
           options={{ title: t('navigation.bottom.search') }}
         />
         {isLogged && (

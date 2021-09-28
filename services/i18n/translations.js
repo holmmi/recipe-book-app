@@ -60,6 +60,7 @@ const resources = Object.freeze({
           ingredients: 'Ainekset (voit valita useamman)',
           preparationTime: 'Valmistusaika (min)',
           searchButton: 'Hae',
+          add: 'Lisää ainesosa',
         },
       },
       navigation: {
