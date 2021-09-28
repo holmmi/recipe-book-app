@@ -115,6 +115,82 @@ const updateUserDetails = async (data) => {
   }
 }
 
+const uploadSingleFile = async (uri) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const formData = new FormData()
+    formData.append('file', {
+      uri,
+      type: getFileMimeType(uri),
+      name: `file${getFileSuffix(uri)}`,
+    })
+    const date = new Date()
+    formData.append('title', date.toString())
+    const response = await fetch(`${apiBaseUrl}/media`, {
+      method: 'POST',
+      headers: {
+        'x-access-token': userToken,
+      },
+      body: formData,
+    })
+    if (response.ok) {
+      const json = await response.json()
+      return json.file_id
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const uploadMultipleFiles = async (uris) => {
+  try {
+    return await Promise.all(
+      uris.map(async (uri) => await uploadSingleFile(uri))
+    )
+  } catch (error) {
+    throw error
+  }
+}
+
+const uploadFileWithDescriptionAndTag = async (uri, description, tag) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const formData = new FormData()
+    formData.append('file', {
+      uri,
+      type: getFileMimeType(uri),
+      name: `avatar${getFileSuffix(uri)}`,
+    })
+    formData.append('title', title)
+    formData.append('description', description)
+    const uploadResponse = await fetch(`${apiBaseUrl}/media`, {
+      method: 'POST',
+      headers: {
+        'x-access-token': userToken,
+      },
+      body: formData,
+    })
+    if (uploadResponse.ok) {
+      const uploadJson = await uploadResponse.json()
+      const tagResponse = await fetch(`${apiBaseUrl}/tags`, {
+        method: 'POST',
+        headers: {
+          'x-access-token': userToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          file_id: uploadJson.file_id,
+          tag,
+        }),
+      })
+      return tagResponse.ok
+    }
+    return false
+  } catch (error) {
+    throw error
+  }
+}
+
 const uploadImageWithTag = async (tag, file, title) => {
   try {
     const userToken = await SecureStore.getItemAsync('userToken')
@@ -176,5 +252,7 @@ export {
   getUserAvatar,
   updateUserDetails,
   uploadImageWithTag,
+  uploadMultipleFiles,
+  uploadFileWithDescriptionAndTag,
   deleteFile,
 }

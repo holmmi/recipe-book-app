@@ -14,6 +14,10 @@ const resources = Object.freeze({
       common: {
         ok: 'Ok',
       },
+      diets: {
+        glutenFree: 'Gluteeniton',
+        lactoseFree: 'Laktoositon',
+      },
       error: {
         notification: 'Ilmoitus',
       },
@@ -26,6 +30,34 @@ const resources = Object.freeze({
           usernameMissing: 'Syötä käyttäjänimi',
           passwordMissing: 'Syötä salasana',
           invalidCredentials: 'Väärä käyttäjätunnus tai salasana',
+        },
+        newRecipe: {
+          addMedia: 'Kuvat ja videot',
+          addMediaButton: 'Valitse mediaa',
+          addRow: 'Lisää rivi',
+          amountMissing: 'Syötä annosmäärä',
+          amountNumbersOnly: 'Ainoastaan numerot ovat sallittu ainemäärässä',
+          chooseCoverPhoto: 'Valitse kuva valmiista annoksesta',
+          coverPhotoMissing: 'Kuva valmiista annoksesta puutuu',
+          dietsLabel: 'Erityisruokavaliot',
+          doseAmountAsNumber: 'Annosmäärässä on sallittu ainoastaan numerot',
+          doseAmountLabel: 'Annosmäärä',
+          doseAmountMissing: 'Syötä annosmäärä',
+          instruction: 'Valmistusohjeet',
+          instructionRequired: 'Syötä ohje',
+          missingRecipeName: 'Reseptin nimi puuttuu',
+          preparationTimeAsNumber:
+            'Valmistusajassa on sallituu ainoastaan numerot',
+          preparationTimeLabel: 'Valmistusaika (min)',
+          preparationTimeMissing: 'Syötä valmistusaika',
+          recipeNameLabel: 'Reseptin nimi',
+          recipeNameMissing: 'Syötä reseptin nimi',
+          substanceMissing: 'Ainesosa puuttuu',
+          substances: {
+            amount: 'Määrä',
+            unit: 'Yksikkö',
+            substance: 'Ainesosa',
+          },
         },
         register: {
           error:
@@ -62,6 +94,10 @@ const resources = Object.freeze({
           recipes: 'Reseptit',
           favorites: 'Suosikit',
         },
+        recipesStack: {
+          addRecipe: 'Lisää resepti',
+          recipes: 'Reseptit',
+        },
       },
       profile: {
         email: 'Sähköpostiosoite',
@@ -70,6 +106,20 @@ const resources = Object.freeze({
         publications: 'Julkaisuja',
         favorites: 'Suosikkeja',
         likes: 'Tykkäyksiä',
+      },
+      progress: {
+        finishButton: 'Lisää resepti',
+        newRecipe: {
+          basicDetails: 'Perustiedot',
+          instructions: 'Ohjeet',
+          substances: 'Ainekset',
+        },
+        nextButton: 'Seuraava',
+        previousButton: 'Edellinen',
+      },
+      singleImage: {
+        choosePhoto: 'Valitse kuva',
+        takePhoto: 'Ota kuva',
       },
     },
   },

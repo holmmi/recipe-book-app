@@ -11,7 +11,7 @@ const getFileMimeType = (fileUri) => {
   if (suffix.endsWith('jpg') || suffix.endsWith('jpeg')) {
     return 'image/jpeg'
   } else if (suffix.endsWith('png')) {
-    return 'image(png'
+    return 'image/png'
   } else if (suffix.endsWith('gif')) {
     return 'image/gif'
   }
