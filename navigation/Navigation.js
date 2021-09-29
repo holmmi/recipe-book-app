@@ -29,12 +29,13 @@ const RecipesStack = () => {
           component={Recipes}
           options={{ headerTitle: t('navigation.recipesStack.recipes') }}
         />
-      </Stack.Group>
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen
           name='AddRecipe'
           component={AddRecipe}
-          options={{ headerTitle: t('navigation.recipesStack.addRecipe') }}
+          options={{
+            headerTitle: t('navigation.recipesStack.addRecipe'),
+            headerBackTitleVisible: false,
+          }}
         />
       </Stack.Group>
     </Stack.Navigator>

@@ -21,7 +21,7 @@ const RecipeInstructions = ({ control, name }) => {
   const { t } = useTranslation()
 
   const addRow = () => {
-    append('')
+    append({ text: '' })
   }
 
   const deleteRow = (index) => {
@@ -47,7 +47,7 @@ const RecipeInstructions = ({ control, name }) => {
               <DataInput
                 control={control}
                 multiline={true}
-                name={`${name}.${index}`}
+                name={`${name}.${index}.text`}
                 rules={rules.instruction}
               />
             </View>

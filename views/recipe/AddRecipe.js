@@ -1,6 +1,12 @@
-import React, { useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Dialog } from 'react-native-paper'
+import {
+  Button,
+  Dialog,
+  IconButton,
+  Paragraph,
+  Portal,
+} from 'react-native-paper'
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps'
 import { useForm } from 'react-hook-form'
 import RecipeBasicDetails from '../../components/RecipeBasicDetails'
@@ -18,19 +24,37 @@ const AddRecipe = ({ navigation }) => {
       defaultValues: {
         coverPhoto: null,
         diets: [],
-        instructions: [''],
+        instructions: [{ text: '' }],
         substances: [{ amount: '', unit: '', substance: '' }],
         media: [],
       },
     })
   const { t } = useTranslation()
   const [stepHasErrors, setStepHasErrors] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState({
+    uploadStarted: false,
+    isUploaded: false,
+  })
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <IconButton
+          icon='chevron-left'
+          color='white'
+          onPress={() => navigation.goBack()}
+        />
+      ),
+    })
+  }, [])
 
   const onNextProgressStep = async (validatableFields) => {
     setStepHasErrors(!(await trigger(validatableFields)))
   }
 
   const onSubmit = async (data) => {
+    setUploadStatus({ ...uploadStatus, uploadStarted: true })
+
     const mediaUris = data.media.map((item) => item.uri)
     const fileIds = await uploadMultipleFiles(mediaUris)
     const description = {
@@ -42,16 +66,59 @@ const AddRecipe = ({ navigation }) => {
       instructions: data.instructions,
       media: fileIds,
     }
-    console.log(JSON.stringify(description))
     const result = await uploadFileWithDescriptionAndTag(
       data.coverPhoto,
       JSON.stringify(description),
-      'recipe-book-app'
+      'recipe-book'
     )
+
+    if (result) {
+      setUploadStatus({
+        ...uploadStatus,
+        uploadStarted: true,
+        isUploaded: true,
+      })
+    }
+  }
+
+  const uploadReady = () => {
+    setUploadStatus({
+      ...uploadStatus,
+      uploadStarted: false,
+      isUploaded: false,
+    })
+    navigation.goBack()
   }
 
   return (
     <View style={styles.container}>
+      <Portal>
+        <Dialog dismissable={false} visible={uploadStatus.uploadStarted}>
+          <Dialog.Title>{t('common.dialog.notification')}</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>
+              {!uploadStatus.isUploaded
+                ? t('common.dialog.uploadingData')
+                : t('common.dialog.uploadReady')}
+            </Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button
+              compact={true}
+              mode='contained'
+              disabled={!uploadStatus.isUploaded}
+              loading={!uploadStatus.isUploaded}
+              color='#F6AE2D'
+              labelStyle={{ color: 'white' }}
+              style={styles.button}
+              onPress={uploadReady}
+            >
+              {t('common.ok')}
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
       <ProgressSteps
         activeLabelColor='#F6AE2D'
         activeStepIconBorderColor='#F6AE2D'
@@ -96,7 +163,6 @@ const AddRecipe = ({ navigation }) => {
           label={t('progress.newRecipe.instructions')}
           finishBtnText={t('progress.finishButton')}
           previousBtnText={t('progress.previousButton')}
-          onNext={() => onNextProgressStep(['substances'])}
           errors={stepHasErrors}
           nextBtnTextStyle={styles.progressStepButton}
           previousBtnTextStyle={styles.progressStepButton}
@@ -110,6 +176,9 @@ const AddRecipe = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    borderRadius: 100,
+  },
   container: {
     flex: 1,
     padding: 10,

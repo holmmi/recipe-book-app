@@ -161,7 +161,8 @@ const uploadFileWithDescriptionAndTag = async (uri, description, tag) => {
       type: getFileMimeType(uri),
       name: `avatar${getFileSuffix(uri)}`,
     })
-    formData.append('title', title)
+    const date = new Date()
+    formData.append('title', date.toString())
     formData.append('description', description)
     const uploadResponse = await fetch(`${apiBaseUrl}/media`, {
       method: 'POST',

@@ -12,6 +12,11 @@ const resources = Object.freeze({
         delete: 'Poista Avatar',
       },
       common: {
+        dialog: {
+          notification: 'Ilmoitus',
+          uploadingData: 'Lähetetään tietoja palvelimelle...',
+          uploadReady: 'Tietojen lähetys palvelimelle onnistui.',
+        },
         ok: 'Ok',
       },
       diets: {
