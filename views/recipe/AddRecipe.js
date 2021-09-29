@@ -56,7 +56,8 @@ const AddRecipe = ({ navigation }) => {
     setUploadStatus({ ...uploadStatus, uploadStarted: true })
 
     const mediaUris = data.media.map((item) => item.uri)
-    const fileIds = await uploadMultipleFiles(mediaUris)
+    const fileIds =
+      mediaUris.length > 0 ? await uploadMultipleFiles(mediaUris) : []
     const description = {
       recipeName: data.recipeName,
       preparationTime: data.preparationTime,

@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store'
+import { FileSystemUploadType, uploadAsync } from 'expo-file-system'
 import { getFileMimeType, getFileSuffix } from '../utils/imageUtil'
 
 const apiBaseUrl = 'https://media.mw.metropolia.fi/wbma'
@@ -118,23 +119,20 @@ const updateUserDetails = async (data) => {
 const uploadSingleFile = async (uri) => {
   try {
     const userToken = await SecureStore.getItemAsync('userToken')
-    const formData = new FormData()
-    formData.append('file', {
-      uri,
-      type: getFileMimeType(uri),
-      name: `file${getFileSuffix(uri)}`,
-    })
     const date = new Date()
-    formData.append('title', date.toString())
-    const response = await fetch(`${apiBaseUrl}/media`, {
-      method: 'POST',
+    const { status, body } = await uploadAsync(`${apiBaseUrl}/media`, uri, {
       headers: {
         'x-access-token': userToken,
       },
-      body: formData,
+      httpMethod: 'POST',
+      uploadType: FileSystemUploadType.MULTIPART,
+      fieldName: 'file',
+      parameters: {
+        title: date.toString(),
+      },
     })
-    if (response.ok) {
-      const json = await response.json()
+    if (status === 200 || status === 201) {
+      const json = JSON.parse(body)
       return json.file_id
     }
   } catch (error) {
@@ -155,24 +153,21 @@ const uploadMultipleFiles = async (uris) => {
 const uploadFileWithDescriptionAndTag = async (uri, description, tag) => {
   try {
     const userToken = await SecureStore.getItemAsync('userToken')
-    const formData = new FormData()
-    formData.append('file', {
-      uri,
-      type: getFileMimeType(uri),
-      name: `avatar${getFileSuffix(uri)}`,
-    })
     const date = new Date()
-    formData.append('title', date.toString())
-    formData.append('description', description)
-    const uploadResponse = await fetch(`${apiBaseUrl}/media`, {
-      method: 'POST',
+    const { status, body } = await uploadAsync(`${apiBaseUrl}/media`, uri, {
       headers: {
         'x-access-token': userToken,
       },
-      body: formData,
+      httpMethod: 'POST',
+      uploadType: FileSystemUploadType.MULTIPART,
+      fieldName: 'file',
+      parameters: {
+        title: date.toString(),
+        description,
+      },
     })
-    if (uploadResponse.ok) {
-      const uploadJson = await uploadResponse.json()
+    if (status === 200 || status === 201) {
+      const fileJson = JSON.parse(body)
       const tagResponse = await fetch(`${apiBaseUrl}/tags`, {
         method: 'POST',
         headers: {
@@ -180,7 +175,7 @@ const uploadFileWithDescriptionAndTag = async (uri, description, tag) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          file_id: uploadJson.file_id,
+          file_id: fileJson.file_id,
           tag,
         }),
       })
