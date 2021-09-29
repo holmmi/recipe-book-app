@@ -6,24 +6,23 @@ import { Headline, Button, TextInput, Chip } from 'react-native-paper'
 import { MainContext } from '../context/MainProvider'
 import DropDown from 'react-native-paper-dropdown'
 import useSearchForm from '../hooks/SearchHooks'
+import diets from '../constants/diets'
 import { search } from '../hooks/ApiHooks'
 
 const SearchForm = ({ navigation }) => {
   const { t } = useTranslation()
   const { inputs, setInputs, handleInputChange } = useSearchForm()
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false)
-  const [diets, setDiets] = useState('')
+  const [dietsValue, setDietsValue] = useState('')
   const [recipeName, setRecipeName] = useState('')
   const [ingredient, setIngredient] = useState('')
   const [time, setTime] = useState('')
   const [chips, setChips] = useState(null)
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
+    search(inputs, 'recipe-book')
     navigation.navigate('Recipes')
-    // console.log('data', inputs)
-
-    const result = await search(inputs, 'recipe-book')
-    console.log(result)
+    console.log('data', inputs)
   }
 
   const resetForm = () => {
@@ -37,19 +36,15 @@ const SearchForm = ({ navigation }) => {
   }
 
   const addIngredient = () => {
-    let list = []
     if (inputs.ingredients.indexOf(ingredient) === -1) {
-      list = inputs.ingredients.concat(ingredient)
+      let list = inputs.ingredients.concat(ingredient)
       updateIngredients(list)
     }
   }
 
   const deleteIngredient = (item) => {
-    let list = []
     let index = inputs.ingredients.indexOf(item)
-    if (index !== -1) {
-      list = inputs.ingredients.splice(index, 1)
-    }
+    let list = inputs.ingredients.splice(index, 1)
     updateIngredients(list)
   }
 
@@ -69,20 +64,11 @@ const SearchForm = ({ navigation }) => {
     )
   }
 
-  const dietList = [
-    {
-      label: t('diet.glutenfree'),
-      value: t('diet.glutenfree'),
-    },
-    {
-      label: t('diet.vegan'),
-      value: t('diet.vegan'),
-    },
-    {
-      label: t('diet.vegetarian'),
-      value: t('diet.vegetarian'),
-    },
-  ]
+  //this is needed because value needs to be a string in the dropdown menu...
+  const dietList = diets.map((item) => ({
+    value: item.value.toString(),
+    label: t(item.label),
+  }))
 
   useEffect(() => {
     resetForm()
@@ -111,9 +97,9 @@ const SearchForm = ({ navigation }) => {
         style={styles.inputBox}
         showDropDown={() => setShowMultiSelectDropDown(true)}
         onDismiss={() => setShowMultiSelectDropDown(false)}
-        value={diets}
+        value={dietsValue}
         setValue={(diets) => {
-          setDiets(diets)
+          setDietsValue(diets)
           handleInputChange('diets', diets)
         }}
         list={dietList}

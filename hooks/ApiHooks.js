@@ -248,8 +248,39 @@ const search = async (data, tag) => {
 
     if (response.ok) {
       const files = await response.json()
-      console.log(files[0].description)
-      files.array.forEach((element) => {})
+      //console.log(files[0].description)
+      let results = []
+      for (let index = 0; index < files.length; index++) {
+        const fullRecipe = files[index]
+        const recipe = JSON.parse(fullRecipe.description)
+
+        //let diets = data.diets.split(',').map(Number)
+
+        var diets = data.diets
+          .substring(1)
+          .split(',')
+          .map(function (item) {
+            return parseInt(item, 10)
+          })
+        console.log(diets)
+
+        if (
+          (data.recipe_name == '' ||
+            recipe.recipeName.search(
+              new RegExp(data.recipe_name, 'i') != -1
+            )) &&
+          (data.diets == '' || recipe.diets.includes(diets)) &&
+          (data.ingredients == '' ||
+            recipe.ingredients.some(
+              (r) => data.ingredients.indexOf($ / r / i) >= 0
+            ))
+        ) {
+          //console.log('match', fullRecipe)
+          results.push(fullRecipe)
+        }
+      }
+      console.log('search results', results)
+      return results
     }
   } catch (error) {
     throw error
