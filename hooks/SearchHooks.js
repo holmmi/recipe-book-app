@@ -3,7 +3,6 @@ import { useState } from 'react'
 const useSearchForm = (callback) => {
   const [inputs, setInputs] = useState({
     recipe_name: '',
-    description: '',
     diets: '',
     ingredients: [],
     time: '',

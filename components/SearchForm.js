@@ -6,6 +6,7 @@ import { Headline, Button, TextInput, Chip } from 'react-native-paper'
 import { MainContext } from '../context/MainProvider'
 import DropDown from 'react-native-paper-dropdown'
 import useSearchForm from '../hooks/SearchHooks'
+import { search } from '../hooks/ApiHooks'
 
 const SearchForm = ({ navigation }) => {
   const { t } = useTranslation()
@@ -17,9 +18,12 @@ const SearchForm = ({ navigation }) => {
   const [time, setTime] = useState('')
   const [chips, setChips] = useState(null)
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     navigation.navigate('Recipes')
-    console.log('data', inputs)
+    // console.log('data', inputs)
+
+    const result = await search(inputs, 'recipe-book')
+    console.log(result)
   }
 
   const resetForm = () => {
@@ -34,7 +38,6 @@ const SearchForm = ({ navigation }) => {
 
   const addIngredient = () => {
     let list = []
-    console.log(inputs.ingredients.indexOf(ingredient))
     if (inputs.ingredients.indexOf(ingredient) === -1) {
       list = inputs.ingredients.concat(ingredient)
       updateIngredients(list)

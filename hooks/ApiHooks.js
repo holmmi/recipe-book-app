@@ -168,6 +168,22 @@ const deleteFile = async (fileId) => {
   }
 }
 
+const search = async (data, tag) => {
+  try {
+    const response = await fetch(`${apiBaseUrl}/tags/${tag}`, {
+      method: 'GET',
+    })
+
+    if (response.ok) {
+      const files = await response.json()
+      console.log(files[0].description)
+      files.array.forEach((element) => {})
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 export {
   apiLogin,
   getCurrentUser,
@@ -177,4 +193,5 @@ export {
   updateUserDetails,
   uploadImageWithTag,
   deleteFile,
+  search,
 }
