@@ -14,10 +14,30 @@ import Profile from '../views/profile/Profile'
 const Stack = createNativeStackNavigator()
 
 const RecipesStack = () => {
+  const { t } = useTranslation()
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name='Recipes' component={Recipes} />
-      <Stack.Screen name='AddRecipe' component={AddRecipe} />
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: 'tomato' },
+        headerTitleStyle: { color: 'white' },
+      }}
+    >
+      <Stack.Group>
+        <Stack.Screen
+          name='Recipes'
+          component={Recipes}
+          options={{ headerTitle: t('navigation.recipesStack.recipes') }}
+        />
+        <Stack.Screen
+          name='AddRecipe'
+          component={AddRecipe}
+          options={{
+            headerTitle: t('navigation.recipesStack.addRecipe'),
+            headerBackTitleVisible: false,
+          }}
+        />
+      </Stack.Group>
     </Stack.Navigator>
   )
 }
@@ -34,7 +54,7 @@ const SearchStack = () => {
 const Tab = createBottomTabNavigator()
 
 const Navigation = () => {
-  const { isLogged } = useContext(MainContext)
+  const { isLogged, setAddingRecipe } = useContext(MainContext)
 
   const { t } = useTranslation()
 
@@ -71,7 +91,10 @@ const Navigation = () => {
         <Tab.Screen
           name='RecipesTab'
           component={RecipesStack}
-          options={{ title: t('navigation.bottom.recipes') }}
+          options={{
+            title: t('navigation.bottom.recipes'),
+            headerShown: false,
+          }}
         />
         <Tab.Screen
           name='SearchTab'

@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store'
+import { FileSystemUploadType, uploadAsync } from 'expo-file-system'
 import { getFileMimeType, getFileSuffix } from '../utils/imageUtil'
 
 const apiBaseUrl = 'https://media.mw.metropolia.fi/wbma'
@@ -115,6 +116,77 @@ const updateUserDetails = async (data) => {
   }
 }
 
+const uploadSingleFile = async (uri) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const date = new Date()
+    const { status, body } = await uploadAsync(`${apiBaseUrl}/media`, uri, {
+      headers: {
+        'x-access-token': userToken,
+      },
+      httpMethod: 'POST',
+      uploadType: FileSystemUploadType.MULTIPART,
+      fieldName: 'file',
+      parameters: {
+        title: date.toString(),
+      },
+    })
+    if (status === 200 || status === 201) {
+      const json = JSON.parse(body)
+      return json.file_id
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
+const uploadMultipleFiles = async (uris) => {
+  try {
+    return await Promise.all(
+      uris.map(async (uri) => await uploadSingleFile(uri))
+    )
+  } catch (error) {
+    throw error
+  }
+}
+
+const uploadFileWithDescriptionAndTag = async (uri, description, tag) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const date = new Date()
+    const { status, body } = await uploadAsync(`${apiBaseUrl}/media`, uri, {
+      headers: {
+        'x-access-token': userToken,
+      },
+      httpMethod: 'POST',
+      uploadType: FileSystemUploadType.MULTIPART,
+      fieldName: 'file',
+      parameters: {
+        title: date.toString(),
+        description,
+      },
+    })
+    if (status === 200 || status === 201) {
+      const fileJson = JSON.parse(body)
+      const tagResponse = await fetch(`${apiBaseUrl}/tags`, {
+        method: 'POST',
+        headers: {
+          'x-access-token': userToken,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          file_id: fileJson.file_id,
+          tag,
+        }),
+      })
+      return tagResponse.ok
+    }
+    return false
+  } catch (error) {
+    throw error
+  }
+}
+
 const uploadImageWithTag = async (tag, file, title) => {
   try {
     const userToken = await SecureStore.getItemAsync('userToken')
@@ -192,6 +264,8 @@ export {
   getUserAvatar,
   updateUserDetails,
   uploadImageWithTag,
+  uploadMultipleFiles,
+  uploadFileWithDescriptionAndTag,
   deleteFile,
   search,
 }
