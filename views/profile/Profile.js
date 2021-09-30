@@ -17,7 +17,7 @@ import * as SecureStore from 'expo-secure-store'
 import RegisterForm from '../../components/RegisterForm'
 import ProfileDetails from '../../components/ProfileDetails'
 import { useForm } from 'react-hook-form'
-import { updateUserDetails, uploadImageWithTag } from '../../hooks/ApiHooks'
+import { updateUserDetails, uploadFileWithTag } from '../../hooks/ApiHooks'
 
 const Profile = ({ navigation }) => {
   const { isLogged, setIsLogged, setUpdateUserDetails } =
@@ -73,7 +73,7 @@ const Profile = ({ navigation }) => {
       setUpdateUserDetails(await updateUserDetails(updatableFields))
     }
     if (data?.file) {
-      await uploadImageWithTag('avatar', data.file, 'Avatar')
+      await uploadFileWithTag('avatar', data.file)
     }
     setEditMode(false)
     setIsSaving(false)

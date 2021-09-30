@@ -1,6 +1,5 @@
 import * as SecureStore from 'expo-secure-store'
 import { FileSystemUploadType, uploadAsync } from 'expo-file-system'
-import { getFileMimeType, getFileSuffix } from '../utils/imageUtil'
 
 const apiBaseUrl = 'https://media.mw.metropolia.fi/wbma'
 
@@ -187,25 +186,23 @@ const uploadFileWithDescriptionAndTag = async (uri, description, tag) => {
   }
 }
 
-const uploadImageWithTag = async (tag, file, title) => {
+const uploadFileWithTag = async (tag, uri) => {
   try {
     const userToken = await SecureStore.getItemAsync('userToken')
-    const formData = new FormData()
-    formData.append('file', {
-      uri: file,
-      type: getFileMimeType(file),
-      name: `avatar${getFileSuffix(file)}`,
-    })
-    formData.append('title', title)
-    const uploadResponse = await fetch(`${apiBaseUrl}/media`, {
-      method: 'POST',
+    const date = new Date()
+    const { status, body } = await uploadAsync(`${apiBaseUrl}/media`, uri, {
       headers: {
         'x-access-token': userToken,
       },
-      body: formData,
+      httpMethod: 'POST',
+      uploadType: FileSystemUploadType.MULTIPART,
+      fieldName: 'file',
+      parameters: {
+        title: date.toString(),
+      },
     })
-    if (uploadResponse.ok) {
-      const uploadJson = await uploadResponse.json()
+    if (status === 200 || status === 201) {
+      const json = JSON.parse(body)
       const tagResponse = await fetch(`${apiBaseUrl}/tags`, {
         method: 'POST',
         headers: {
@@ -213,7 +210,7 @@ const uploadImageWithTag = async (tag, file, title) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          file_id: uploadJson.file_id,
+          file_id: json.file_id,
           tag: tag,
         }),
       })
@@ -309,7 +306,7 @@ export {
   createUser,
   getUserAvatar,
   updateUserDetails,
-  uploadImageWithTag,
+  uploadFileWithTag,
   uploadMultipleFiles,
   uploadFileWithDescriptionAndTag,
   deleteFile,

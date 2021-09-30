@@ -38,7 +38,7 @@ const ProfileDetails = ({
     } else {
       findUserAvatar()
     }
-  }, [editMode])
+  }, [editMode, userDetails])
 
   const getUserInitials = () => {
     if (userDetails?.full_name) {
