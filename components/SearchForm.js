@@ -15,7 +15,7 @@ const SearchForm = ({ navigation }) => {
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false)
   const [dietsValue, setDietsValue] = useState('')
   const [recipeName, setRecipeName] = useState('')
-  const [ingredient, setIngredieasdnt] = useState('')
+  const [ingredient, setIngredient] = useState('')
   const [time, setTime] = useState('')
   const [chips, setChips] = useState(null)
 
