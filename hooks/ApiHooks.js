@@ -248,38 +248,53 @@ const search = async (data, tag) => {
 
     if (response.ok) {
       const files = await response.json()
-      //console.log(files[0].description)
       let results = []
+      const diets = data.diets
+        .substring(1)
+        .split(',')
+        .map(function (item) {
+          return parseInt(item, 10)
+        })
       for (let index = 0; index < files.length; index++) {
-        const fullRecipe = files[index]
-        const recipe = JSON.parse(fullRecipe.description)
+        const fullRecipe = files[index] //result diet
+        const recipe = JSON.parse(fullRecipe.description) //result diet description field
+        const ingredients = recipe.substances.map((item) => item.substance) //results ingredients
 
-        //let diets = data.diets.split(',').map(Number)
+        const checkIngredientmatch = () => {
+          let matches = 0
+          let queries = data.ingredients.length
+          for (const item of ingredients) {
+            for (const query of data.ingredients) {
+              if (item.search(new RegExp(query, 'i')) != -1) {
+                matches++
+              }
+            }
+          }
+          return matches === queries
+        }
+        // https://stackoverflow.com/a/53606357
+        let checker = (arr, target) => target.every((v) => arr.includes(v))
 
-        var diets = data.diets
-          .substring(1)
-          .split(',')
-          .map(function (item) {
-            return parseInt(item, 10)
-          })
-        console.log(diets)
-
+        function checkTimeMatch(queryTime, divergency) {
+          return (
+            queryTime >= recipe.preparationTime - divergency &&
+            queryTime <= recipe.preparationTime + divergency
+          )
+        }
+        //checks that every query item matches current target recipe from result if query field is not empty
         if (
           (data.recipe_name == '' ||
             recipe.recipeName.search(
               new RegExp(data.recipe_name, 'i') != -1
             )) &&
-          (data.diets == '' || recipe.diets.includes(diets)) &&
-          (data.ingredients == '' ||
-            recipe.ingredients.some(
-              (r) => data.ingredients.indexOf($ / r / i) >= 0
-            ))
+          (data.diets == '' || checker(recipe.diets, diets)) &&
+          (data.ingredients == '' || checkIngredientmatch()) &&
+          (data.time == '' || checkTimeMatch(parseInt(data.time), 5))
         ) {
-          //console.log('match', fullRecipe)
           results.push(fullRecipe)
         }
       }
-      console.log('search results', results)
+      console.log('results', results)
       return results
     }
   } catch (error) {

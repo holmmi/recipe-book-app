@@ -15,7 +15,7 @@ const SearchForm = ({ navigation }) => {
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false)
   const [dietsValue, setDietsValue] = useState('')
   const [recipeName, setRecipeName] = useState('')
-  const [ingredient, setIngredient] = useState('')
+  const [ingredient, setIngredieasdnt] = useState('')
   const [time, setTime] = useState('')
   const [chips, setChips] = useState(null)
 
@@ -39,6 +39,7 @@ const SearchForm = ({ navigation }) => {
     if (inputs.ingredients.indexOf(ingredient) === -1) {
       let list = inputs.ingredients.concat(ingredient)
       updateIngredients(list)
+      setIngredient('')
     }
   }
 
