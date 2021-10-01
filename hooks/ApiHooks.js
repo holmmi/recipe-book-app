@@ -1,7 +1,38 @@
+import React, { useEffect, useState } from 'react'
 import * as SecureStore from 'expo-secure-store'
 import { FileSystemUploadType, uploadAsync } from 'expo-file-system'
+import tags from '../constants/tags'
 
 const apiBaseUrl = 'https://media.mw.metropolia.fi/wbma'
+
+const useLoadRecipes = () => {
+  const [recipes, setRecipes] = useState([])
+
+  useEffect(() => {
+    const loadRecipes = async () => {
+      try {
+        const tagResponse = await fetch(`${apiBaseUrl}/tags/${tags.recipes}`)
+        if (tagResponse.ok) {
+          const tagFiles = await tagResponse.json()
+          const files = await Promise.all(
+            tagFiles.map(async (tagFile) => {
+              const fileResponse = await fetch(
+                `${apiBaseUrl}/media/${tagFile.file_id}`
+              )
+              return await fileResponse.json()
+            })
+          )
+          setRecipes(files)
+        }
+      } catch (error) {
+        throw error
+      }
+    }
+    loadRecipes()
+  }, [])
+
+  return recipes
+}
 
 const apiLogin = async (data) => {
   try {
@@ -238,6 +269,7 @@ const deleteFile = async (fileId) => {
 }
 
 export {
+  useLoadRecipes,
   apiLogin,
   getCurrentUser,
   checkIfUsernameExists,
