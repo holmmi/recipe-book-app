@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useContext, useLayoutEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import {
   Button,
@@ -17,6 +17,7 @@ import {
   uploadFileWithDescriptionAndTag,
   uploadMultipleFiles,
 } from '../../hooks/ApiHooks'
+import { MainContext } from '../../context/MainProvider'
 
 const AddRecipe = ({ navigation }) => {
   const { control, trigger, handleSubmit, register, setValue, getValues } =
@@ -35,6 +36,7 @@ const AddRecipe = ({ navigation }) => {
     uploadStarted: false,
     isUploaded: false,
   })
+  const { userDetails } = useContext(MainContext)
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -66,6 +68,7 @@ const AddRecipe = ({ navigation }) => {
       substances: data.substances,
       instructions: data.instructions,
       media: fileIds,
+      authorDetails: userDetails,
     }
     const result = await uploadFileWithDescriptionAndTag(
       data.coverPhoto,
@@ -88,7 +91,7 @@ const AddRecipe = ({ navigation }) => {
       uploadStarted: false,
       isUploaded: false,
     })
-    navigation.goBack()
+    navigation.navigate('Recipes', { refresh: true })
   }
 
   return (

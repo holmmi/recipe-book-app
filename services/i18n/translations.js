@@ -102,6 +102,7 @@ const resources = Object.freeze({
         recipesStack: {
           addRecipe: 'Lisää resepti',
           recipes: 'Reseptit',
+          recipeView: 'Reseptin tarkastelu',
         },
       },
       profile: {

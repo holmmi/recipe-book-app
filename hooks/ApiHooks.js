@@ -5,31 +5,40 @@ import tags from '../constants/tags'
 
 const apiBaseUrl = 'https://media.mw.metropolia.fi/wbma'
 
-const useLoadRecipes = () => {
+const useLoadRecipes = (refresh) => {
   const [recipes, setRecipes] = useState([])
 
-  useEffect(() => {
-    const loadRecipes = async () => {
-      try {
-        const tagResponse = await fetch(`${apiBaseUrl}/tags/${tags.recipes}`)
-        if (tagResponse.ok) {
-          const tagFiles = await tagResponse.json()
-          const files = await Promise.all(
-            tagFiles.map(async (tagFile) => {
-              const fileResponse = await fetch(
-                `${apiBaseUrl}/media/${tagFile.file_id}`
-              )
-              return await fileResponse.json()
-            })
-          )
-          setRecipes(files)
-        }
-      } catch (error) {
-        throw error
+  const loadRecipes = async () => {
+    try {
+      const tagResponse = await fetch(`${apiBaseUrl}/tags/${tags.recipes}`)
+      if (tagResponse.ok) {
+        const tagFiles = await tagResponse.json()
+        const files = await Promise.all(
+          tagFiles.map(async (tagFile) => {
+            const fileResponse = await fetch(
+              `${apiBaseUrl}/media/${tagFile.file_id}`
+            )
+            return await fileResponse.json()
+          })
+        )
+        setRecipes(files.sort((a, b) => b.file_id - a.file_id))
       }
+    } catch (error) {
+      throw error
     }
+  }
+
+  useEffect(() => {
     loadRecipes()
   }, [])
+
+  useEffect(() => {
+    if (refresh) {
+      setTimeout(() => {
+        loadRecipes()
+      }, 500)
+    }
+  }, [refresh])
 
   return recipes
 }
@@ -50,6 +59,23 @@ const apiLogin = async (data) => {
       userDetails = json.user
     }
     return userDetails
+  } catch (error) {
+    throw error
+  }
+}
+
+const getUserDetails = async (userId) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const response = await fetch(`${apiBaseUrl}/users/${userId}`, {
+      headers: {
+        'x-access-token': userToken,
+      },
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+    return null
   } catch (error) {
     throw error
   }
@@ -272,6 +298,7 @@ export {
   useLoadRecipes,
   apiLogin,
   getCurrentUser,
+  getUserDetails,
   checkIfUsernameExists,
   createUser,
   getUserAvatar,
