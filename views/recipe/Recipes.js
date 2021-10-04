@@ -1,10 +1,19 @@
-import React, { useContext, useLayoutEffect } from 'react'
-import { View, StyleSheet } from 'react-native'
+import React, {
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from 'react'
+import { StyleSheet, View } from 'react-native'
 import { IconButton } from 'react-native-paper'
+import List from '../../components/List'
 import { MainContext } from '../../context/MainProvider'
+import { useLoadRecipes } from '../../hooks/ApiHooks'
 
-const Recipes = ({ navigation }) => {
-  const { isLogged } = useContext(MainContext)
+const Recipes = ({ navigation, route }) => {
+  const { isLogged, userDetails } = useContext(MainContext)
+  const [activeTab, setActiveTab] = useState('all')
+  const recipes = useLoadRecipes(route?.params?.refresh)
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -23,13 +32,35 @@ const Recipes = ({ navigation }) => {
     })
   }, [isLogged])
 
-  return <View style={styles.container}></View>
+  const filterRecipes = useCallback(() => {
+    if (activeTab === 'own') {
+      return recipes.filter((recipe) => recipe.user_id === userDetails.user_id)
+    }
+    return recipes
+  }, [activeTab, recipes])
+
+  return (
+    <View style={styles.container}>
+      <List
+        navigation={navigation}
+        recipes={filterRecipes()}
+        setActiveTab={setActiveTab}
+      />
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ccc',
+  },
+  toggleButton: {
+    width: 100,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: 'tomato',
+    backgroundColor: 'white',
   },
 })
 

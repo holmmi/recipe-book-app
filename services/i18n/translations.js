@@ -110,6 +110,7 @@ const resources = Object.freeze({
         recipesStack: {
           addRecipe: 'Lisää resepti',
           recipes: 'Reseptit',
+          recipeView: 'Reseptin tarkastelu',
         },
       },
       profile: {
@@ -133,6 +134,12 @@ const resources = Object.freeze({
       singleImage: {
         choosePhoto: 'Valitse kuva',
         takePhoto: 'Ota kuva',
+      },
+      tabs: {
+        recipes: {
+          all: 'Kaikki',
+          own: 'Omat',
+        },
       },
     },
   },

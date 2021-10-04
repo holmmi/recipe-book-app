@@ -10,6 +10,7 @@ import AddRecipe from '../views/recipe/AddRecipe'
 import Search from '../views/search/Search'
 import Favorites from '../views/favorites/Favorites'
 import Profile from '../views/profile/Profile'
+import Recipe from '../views/recipe/Recipe'
 
 const Stack = createNativeStackNavigator()
 
@@ -34,6 +35,14 @@ const RecipesStack = () => {
           component={AddRecipe}
           options={{
             headerTitle: t('navigation.recipesStack.addRecipe'),
+            headerBackTitleVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name='Recipe'
+          component={Recipe}
+          options={{
+            headerTitle: t('navigation.recipesStack.recipeView'),
             headerBackTitleVisible: false,
           }}
         />
