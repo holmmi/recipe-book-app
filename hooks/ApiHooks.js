@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as SecureStore from 'expo-secure-store'
 import { FileSystemUploadType, uploadAsync } from 'expo-file-system'
 import tags from '../constants/tags'
@@ -289,6 +289,35 @@ const deleteFile = async (fileId) => {
       },
     })
     return response.ok
+  } catch (error) {
+    throw error
+  }
+}
+
+const addLike = async (fileId) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const response = await fetch(`${apiBaseUrl}/ratings`, {
+      method: 'POST',
+      headers: {
+        'x-access-token': userToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ file_id: fileId, rating: 1 }),
+    })
+    return response.ok
+  } catch (error) {
+    throw error
+  }
+}
+
+const getLikes = async (fileId) => {
+  try {
+    const response = await fetch(`${apiBaseUrl}/ratings/file/${fileId}`)
+    if (response.ok) {
+      return await response.json().length
+    }
+    return 0
   } catch (error) {
     throw error
   }
