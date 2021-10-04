@@ -309,6 +309,14 @@ const search = async (data, tag) => {
         .map(function (item) {
           return parseInt(item, 10)
         })
+      if (
+        data.recipe_name == '' &&
+        data.diets == '' &&
+        data.ingredients == '' &&
+        data.time == ''
+      ) {
+        return files
+      }
       for (let index = 0; index < files.length; index++) {
         const fullRecipe = files[index] //result diet
         const recipe = JSON.parse(fullRecipe.description) //result diet description field
@@ -348,7 +356,7 @@ const search = async (data, tag) => {
           results.push(fullRecipe)
         }
       }
-      console.log('results', results)
+      //console.log('results', results)
       return results
     }
   } catch (error) {

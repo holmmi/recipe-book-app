@@ -26,6 +26,9 @@ const resources = Object.freeze({
       error: {
         notification: 'Ilmoitus',
       },
+      recipe: {
+        removeSearch: 'Poista hakutulokset',
+      },
       form: {
         login: {
           usernameLabel: 'Käyttäjänimi',

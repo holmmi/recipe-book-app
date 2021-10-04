@@ -11,6 +11,7 @@ import { search } from '../hooks/ApiHooks'
 
 const SearchForm = ({ navigation }) => {
   const { t } = useTranslation()
+  const { setSearch } = useContext(MainContext)
   const { inputs, setInputs, handleInputChange } = useSearchForm()
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false)
   const [dietsValue, setDietsValue] = useState('')
@@ -19,10 +20,10 @@ const SearchForm = ({ navigation }) => {
   const [time, setTime] = useState('')
   const [chips, setChips] = useState(null)
 
-  const onSubmit = () => {
-    search(inputs, 'recipe-book')
-    navigation.navigate('Recipes')
-    console.log('data', inputs)
+  const onSubmit = async () => {
+    setSearch(true)
+    const results = await search(inputs, 'recipe-book')
+    navigation.navigate('Recipes', results)
   }
 
   const resetForm = () => {
