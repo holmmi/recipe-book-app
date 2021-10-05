@@ -11,6 +11,23 @@ import PropTypes from 'prop-types'
 import { MainContext } from '../../context/MainProvider'
 import { useTranslation } from 'react-i18next'
 import { deleteFile } from '../../hooks/ApiHooks'
+import Tabs from '../../components/Tabs'
+import RecipeBasicDetails from './RecipeBasicDetails'
+
+const tabs = [
+  {
+    label: 'tabs.recipe.basicDetails',
+    value: 'basicDetails',
+  },
+  {
+    label: 'tabs.recipe.substances',
+    value: 'substances',
+  },
+  {
+    label: 'tabs.recipe.instructions',
+    value: 'instructions',
+  },
+]
 
 const Recipe = ({ navigation, route }) => {
   const { media } = JSON.parse(route.params?.description)
@@ -18,6 +35,7 @@ const Recipe = ({ navigation, route }) => {
   const { isLogged, userDetails } = useContext(MainContext)
   const [editMode, setEditMode] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [activeTab, setActiveTab] = useState('basicDetails')
   const { t } = useTranslation()
 
   useLayoutEffect(() => {
@@ -62,6 +80,10 @@ const Recipe = ({ navigation, route }) => {
     }
   }
 
+  const tabViews = {
+    basicDetails: () => <RecipeBasicDetails />,
+  }
+
   return (
     <View style={styles.container}>
       <Portal>
@@ -87,6 +109,14 @@ const Recipe = ({ navigation, route }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+      <View style={styles.tabContainer}>
+        <Tabs
+          defaultValue='basicDetails'
+          onValueChange={(value) => setActiveTab(value)}
+          tabs={tabs}
+        />
+      </View>
+      {tabViews[activeTab]()}
     </View>
   )
 }
@@ -98,6 +128,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 })
 

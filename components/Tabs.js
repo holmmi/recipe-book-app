@@ -39,6 +39,7 @@ const Tabs = ({ defaultValue, onValueChange, tabs }) => {
           value={tab.value}
           style={{
             ...styles.toggleButton,
+            borderRadius: tabs.length - 1 !== index && index !== 0 ? 0 : 100,
             backgroundColor: toggledButton === tab.value ? 'tomato' : 'white',
           }}
           status={toggledButton === tab.value ? 'checked' : 'unchecked'}
@@ -51,7 +52,6 @@ const Tabs = ({ defaultValue, onValueChange, tabs }) => {
 const styles = StyleSheet.create({
   toggleButton: {
     width: 100,
-    borderRadius: 100,
     borderWidth: 1,
     borderColor: 'tomato',
     backgroundColor: 'white',

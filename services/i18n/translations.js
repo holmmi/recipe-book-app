@@ -132,6 +132,11 @@ const resources = Object.freeze({
         takePhoto: 'Ota kuva',
       },
       tabs: {
+        recipe: {
+          basicDetails: 'Perustiedot',
+          instructions: 'Ohjeet',
+          substances: 'Ainekset',
+        },
         recipes: {
           all: 'Kaikki',
           own: 'Omat',
