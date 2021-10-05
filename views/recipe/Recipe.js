@@ -81,7 +81,7 @@ const Recipe = ({ navigation, route }) => {
   }
 
   const tabViews = {
-    basicDetails: () => <RecipeBasicDetails />,
+    basicDetails: () => <RecipeBasicDetails dataItem={route.params} />,
   }
 
   return (
