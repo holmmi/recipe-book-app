@@ -12,6 +12,7 @@ const resources = Object.freeze({
         delete: 'Poista Avatar',
       },
       common: {
+        cancel: 'Peruuta',
         dialog: {
           notification: 'Ilmoitus',
           uploadingData: 'Lähetetään tietoja palvelimelle...',
@@ -134,11 +135,19 @@ const resources = Object.freeze({
         nextButton: 'Seuraava',
         previousButton: 'Edellinen',
       },
+      recipe: {
+        deleteConfirmation: 'Haluatko varmasti poistaa tämän reseptin?',
+      },
       singleImage: {
         choosePhoto: 'Valitse kuva',
         takePhoto: 'Ota kuva',
       },
       tabs: {
+        recipe: {
+          basicDetails: 'Perustiedot',
+          instructions: 'Ohjeet',
+          substances: 'Ainekset',
+        },
         recipes: {
           all: 'Kaikki',
           own: 'Omat',
