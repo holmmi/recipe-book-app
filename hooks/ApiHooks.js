@@ -300,6 +300,9 @@ const search = async (data, tag) => {
       method: 'GET',
     })
 
+    // https://stackoverflow.com/a/53606357
+    const checker = (arr, target) => target.every((v) => arr.includes(v))
+
     if (response.ok) {
       const files = await response.json()
       let results = []
@@ -327,15 +330,13 @@ const search = async (data, tag) => {
           let queries = data.ingredients.length
           for (const item of ingredients) {
             for (const query of data.ingredients) {
-              if (item.search(new RegExp(query, 'i')) != -1) {
+              if (item.toLowerCase().includes(query.toLowerCase())) {
                 matches++
               }
             }
           }
           return matches === queries
         }
-        // https://stackoverflow.com/a/53606357
-        let checker = (arr, target) => target.every((v) => arr.includes(v))
 
         function checkTimeMatch(queryTime, divergency) {
           return (
@@ -346,9 +347,9 @@ const search = async (data, tag) => {
         //checks that every query item matches current target recipe from result if query field is not empty
         if (
           (data.recipe_name == '' ||
-            recipe.recipeName.search(
-              new RegExp(data.recipe_name, 'i') != -1
-            )) &&
+            recipe.recipeName
+              .toLowerCase()
+              .includes(data.recipe_name.toLowerCase())) &&
           (data.diets == '' || checker(recipe.diets, diets)) &&
           (data.ingredients == '' || checkIngredientmatch()) &&
           (data.time == '' || checkTimeMatch(parseInt(data.time), 5))

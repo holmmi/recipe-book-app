@@ -35,14 +35,21 @@ const Recipes = ({ navigation, route }) => {
   }, [isLogged])
 
   const filterRecipes = useCallback(() => {
-    if (activeTab === 'own') {
-      return recipes.filter((recipe) => recipe.user_id === userDetails.user_id)
-    }
     if (search) {
-      return route.params
+      return activeTab === 'own'
+        ? route.params.filter(
+            (recipe) => recipe.user_id === userDetails.user_id
+          )
+        : route.params
+    } else {
+      if (activeTab === 'own') {
+        return recipes.filter(
+          (recipe) => recipe.user_id === userDetails.user_id
+        )
+      }
+      return recipes
     }
-    return recipes
-  }, [activeTab, recipes, search])
+  }, [activeTab, recipes, search, route])
 
   return (
     <View style={styles.container}>

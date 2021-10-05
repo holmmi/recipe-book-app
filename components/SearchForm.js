@@ -23,6 +23,8 @@ const SearchForm = ({ navigation }) => {
   const onSubmit = async () => {
     setSearch(true)
     const results = await search(inputs, 'recipe-book')
+    console.log(results)
+    console.log(inputs)
     navigation.navigate('Recipes', results)
   }
 
@@ -73,7 +75,7 @@ const SearchForm = ({ navigation }) => {
   }))
 
   useEffect(() => {
-    resetForm()
+    // resetForm()
   }, [])
 
   return (
