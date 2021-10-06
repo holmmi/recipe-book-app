@@ -368,19 +368,15 @@ const search = async (data, tag) => {
 const getRecipeFiles = async (fileIds) => {
   let files = []
   try {
-    await new Promise(
-      async () => {
-        for (const id of fileIds) {
-          const response = await fetch(`${apiBaseUrl}/media/${id}`)
-          if (response.ok) {
-            //console.log(await response.json())
-            files.push(await response.json())
-          }
-        }
-        console.log('files', files)
-      },
-      () => {}
-    )
+    for (const id of fileIds) {
+      const response = await fetch(`${apiBaseUrl}/media/${id}`)
+      if (response.ok) {
+        //console.log(await response.json())
+        files.push(await response.json())
+      }
+    }
+    console.log('files', files)
+
     return files
   } catch (error) {
     throw error

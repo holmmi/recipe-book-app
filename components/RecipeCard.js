@@ -1,105 +1,106 @@
 import React, { useRef, useEffect, useState } from 'react'
-import { StyleSheet, View, ImageBackground, Dimensions } from 'react-native'
-import { Card, IconButton, Subheading, Text } from 'react-native-paper'
+import {
+  StyleSheet,
+  View,
+  ImageBackground,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+} from 'react-native'
+import { IconButton, Text } from 'react-native-paper'
 import PropTypes from 'prop-types'
-import Carousel, { Pagination } from 'react-native-snap-carousel'
 import { getRecipeFiles } from '../hooks/ApiHooks'
+import { Video } from 'expo-av'
+import { SwiperFlatList } from 'react-native-swiper-flatlist'
 
 const mediaUploads = 'http://media.mw.metropolia.fi/wbma/uploads/'
 const { height, width } = Dimensions.get('window')
 
-const CarouselPaginationBar = (props) => {
-  return (
-    <TouchableOpacity
-      onPress={() => {
-        props.carouselRef.current.snapToItem(props.index)
-      }}
-    >
-      <View
-        width={props.width}
-        marginHorizontal={4}
-        height={3}
-        backgroundColor={
-          props.inactive ? 'rgba(0, 0, 0, 0.20)' : 'rgba(0, 0, 0, 0.90)'
-        }
-      ></View>
-    </TouchableOpacity>
-  )
-}
+const RecipeCard = ({ dataItem }) => {
+  const [recipe, setRecipe] = useState({})
+  const [files, setFiles] = useState([])
+  const [videoRef, setVideoRef] = useState(null)
+  const [done, setDone] = useState(false)
+  const [firstSlide, setFirstSlide] = useState('')
+  const [disabled, setDisabled] = useState(false)
 
-const RecipeCard = ({ recipe, files }) => {
-  const [activeSlide, setActiveSlide] = useState(0)
-  const carouselRef = useRef(null)
-
-  const mapFiles = (newFiles) => {
-    console.log('files', newFiles)
-
-    /*setFiles(
-      //firstSlide +
-      newFiles.map((item) => {
-        console.log('item', item)
-        item.media_type === 'video' && (
-          <Image source={{ uri: `${mediaUploads}${item.filename}` }}></Image>
-        )
-      })
-    )*/
+  const addFirstSlide = (recipe) => {
+    setFirstSlide([
+      <View>
+        <ImageBackground
+          source={{ uri: `${mediaUploads}${dataItem.filename}` }}
+          resizeMode='cover'
+          style={styles.image}
+        >
+          <View style={styles.nameContainer}>
+            <Text style={styles.recipeName}>{recipe.recipeName}</Text>
+          </View>
+        </ImageBackground>
+      </View>,
+    ])
   }
 
-  const firstSlide = [
-    <ImageBackground
-      source={{ uri: `${mediaUploads}${recipe.filename}` }}
-      resizeMode='cover'
-      style={styles.image}
-    >
-      <View style={styles.nameContainer}>
-        <Text style={styles.recipeName}>{recipe.recipeName}</Text>
-      </View>
-    </ImageBackground>,
-  ]
+  const handleVideoRef = (component) => {
+    setVideoRef(component)
+  }
 
-  const getPagination = () => (
-    <Pagination
-      dotsLength={firstSlide.length}
-      activeDotIndex={activeSlide}
-      containerStyle={{
-        backgroundColor: 'white',
-        paddingVertical: 8,
-      }}
-      dotElement={
-        <CarouselPaginationBar width={width / 9} carouselRef={carouselRef} />
-      }
-      inactiveDotElement={
-        <CarouselPaginationBar
-          width={width / 9}
-          carouselRef={carouselRef}
-          inactive
-        />
-      }
-    />
-  )
+  const getMedia = async () => {
+    //console.log('dataitem', dataItem)
+    const newRecipe = await JSON.parse(dataItem.description)
 
-  useEffect(() => {}, [])
+    //console.log('newRecipe', newRecipe)
+    //firstSlide(newRecipe)
+    console.log()
+    addFirstSlide(newRecipe)
+    setFiles(await getRecipeFiles(newRecipe.media))
+    setRecipe(newRecipe)
+    setDone(true)
+  }
+
+  useEffect(() => {
+    getMedia()
+  }, [])
 
   return (
     <View style={styles.container}>
-      <View>
-        {console.log('file elements', files)}
+      <SwiperFlatList
+        autoplay
+        autoplayDelay={2}
+        autoplayLoop
+        index={files.length - 1}
+        showPagination
+        data={files}
+        renderItem={({ item }) =>
+          item.media_type === 'image' ? (
+            <Image
+              key={item.filename}
+              style={styles.image}
+              source={{ uri: `${mediaUploads}${item.filename}` }}
+            />
+          ) : item.media_type === 'video' ? (
+            <TouchableOpacity // usePoster hides video so use this to start it
+              disabled={disabled}
+              onPress={() => {
+                videoRef.playAsync()
+                setDisabled(true) // disable touchableOpacity when video is started
+              }}
+            >
+              <Video
+                ref={handleVideoRef}
+                style={styles.image}
+                source={{ uri: `${mediaUploads}${item.filename}` }}
+                useNativeControls
+                resizeMode='contain'
+                usePoster
+                posterSource={{ uri: `${mediaUploads}${item.screenshot}` }}
+              />
+            </TouchableOpacity>
+          ) : (
+            <View>File not supported</View>
+          )
+        }
+      />
 
-        {getPagination()}
-
-        <View>
-          <Carousel
-            ref={carouselRef}
-            data={files}
-            renderItem={(item) => item.item}
-            sliderWidth={width}
-            sliderHeight={height}
-            itemWidth={width}
-            activeSlideAlignment={'start'}
-            onSnapToItem={(index) => setActiveSlide(index)}
-          />
-        </View>
-      </View>
       <View style={styles.content}></View>
       <View style={styles.likesContainer}>
         <IconButton icon='heart-outline' color='black' />
@@ -121,8 +122,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   image: {
-    height: 200,
     width: '100%',
+    height: 300,
+    aspectRatio: 1,
   },
   nameContainer: {
     bottom: 15,
@@ -156,8 +158,7 @@ const styles = StyleSheet.create({
 })
 
 RecipeCard.propTypes = {
-  recipe: PropTypes.object,
-  files: PropTypes.array,
+  dataItem: PropTypes.object,
 }
 
 export default RecipeCard
