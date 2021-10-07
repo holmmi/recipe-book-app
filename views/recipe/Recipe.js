@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { deleteFile } from '../../hooks/ApiHooks'
 import Tabs from '../../components/Tabs'
 import RecipeBasicDetails from './RecipeBasicDetails'
+import RecipeCard from '../../components/RecipeCard'
 
 const tabs = [
   {
@@ -117,6 +118,7 @@ const Recipe = ({ navigation, route }) => {
         />
       </View>
       {tabViews[activeTab]()}
+      <RecipeCard dataItem={route.params}></RecipeCard>
     </View>
   )
 }
