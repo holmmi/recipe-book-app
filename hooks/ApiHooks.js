@@ -371,11 +371,9 @@ const getRecipeFiles = async (fileIds) => {
     for (const id of fileIds) {
       const response = await fetch(`${apiBaseUrl}/media/${id}`)
       if (response.ok) {
-        //console.log(await response.json())
         files.push(await response.json())
       }
     }
-    console.log('files', files)
 
     return files
   } catch (error) {

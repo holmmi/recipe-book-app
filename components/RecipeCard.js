@@ -12,49 +12,114 @@ import PropTypes from 'prop-types'
 import { getRecipeFiles } from '../hooks/ApiHooks'
 import { Video } from 'expo-av'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
+import * as ScreenOrientation from 'expo-screen-orientation'
 
 const mediaUploads = 'http://media.mw.metropolia.fi/wbma/uploads/'
-const { height, width } = Dimensions.get('window')
+
+const { width, height } = Dimensions.get('window')
 
 const RecipeCard = ({ dataItem }) => {
-  const [recipe, setRecipe] = useState({})
-  const [files, setFiles] = useState([])
+  const [media, setMedia] = useState(null)
   const [videoRef, setVideoRef] = useState(null)
   const [done, setDone] = useState(false)
-  const [firstSlide, setFirstSlide] = useState('')
-  const [disabled, setDisabled] = useState(false)
-
-  const addFirstSlide = (recipe) => {
-    setFirstSlide([
-      <View>
-        <ImageBackground
-          source={{ uri: `${mediaUploads}${dataItem.filename}` }}
-          resizeMode='cover'
-          style={styles.image}
-        >
-          <View style={styles.nameContainer}>
-            <Text style={styles.recipeName}>{recipe.recipeName}</Text>
-          </View>
-        </ImageBackground>
-      </View>,
-    ])
-  }
+  //const [disabled, setDisabled] = useState(false)
 
   const handleVideoRef = (component) => {
     setVideoRef(component)
   }
 
-  const getMedia = async () => {
-    //console.log('dataitem', dataItem)
-    const newRecipe = await JSON.parse(dataItem.description)
+  const unlock = async () => {
+    try {
+      await ScreenOrientation.unlockAsync()
+    } catch (error) {
+      console.error('unlock', error.message)
+    }
+  }
 
-    //console.log('newRecipe', newRecipe)
-    //firstSlide(newRecipe)
-    console.log()
-    addFirstSlide(newRecipe)
-    setFiles(await getRecipeFiles(newRecipe.media))
-    setRecipe(newRecipe)
-    setDone(true)
+  const lock = async () => {
+    try {
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
+      )
+    } catch (error) {
+      console.error('lock', error.message)
+    }
+  }
+
+  useEffect(() => {
+    unlock()
+
+    const orientSub = ScreenOrientation.addOrientationChangeListener((evt) => {
+      console.log('orientation', evt)
+      if (evt.orientationInfo.orientation > 2) {
+        // show video in fullscreen
+        showVideoInFullscreen()
+      }
+    })
+    // when leaving the component lock screen to portrait
+    return () => {
+      ScreenOrientation.removeOrientationChangeListener(orientSub)
+      lock()
+    }
+  }, [videoRef])
+
+  // end screen orientation
+
+  const addMedia = (newFiles, recipe) => {
+    setMedia(
+      newFiles.map((item, index) =>
+        index === 0 ? (
+          <ImageBackground
+            key={item.filename}
+            style={styles.child}
+            source={{ uri: `${mediaUploads}${dataItem.filename}` }}
+          >
+            <View style={styles.nameContainer}>
+              <Text style={styles.recipeName}>{recipe.recipeName}</Text>
+            </View>
+            <View style={styles.likesContainer}>
+              <IconButton icon='heart-outline' color='white' />
+              <Text style={styles.recipeName}>0</Text>
+            </View>
+          </ImageBackground>
+        ) : item.media_type === 'image' && index > 0 ? (
+          <ImageBackground
+            key={item.filename}
+            style={styles.child}
+            source={{ uri: `${mediaUploads}${item.filename}` }}
+          ></ImageBackground>
+        ) : item.media_type === 'video' ? (
+          <Video
+            key={item.filename}
+            style={styles.child}
+            ref={handleVideoRef}
+            source={{ uri: `${mediaUploads}${item.filename}` }}
+            useNativeControls
+            resizeMode='contain'
+            usePoster
+            posterSource={{ uri: `${mediaUploads}${item.screenshot}` }}
+          />
+        ) : (
+          <View style={styles.child} key={item.filename}>
+            <Text>File not supported</Text>
+          </View>
+        )
+      )
+    )
+  }
+
+  const getMedia = async () => {
+    try {
+      const newRecipe = await JSON.parse(dataItem.description)
+
+      let media = await getRecipeFiles(newRecipe.media)
+      media.unshift(dataItem)
+      addMedia(media, newRecipe)
+
+      setDone(true)
+    } catch (error) {
+      throw error
+    }
   }
 
   useEffect(() => {
@@ -63,48 +128,12 @@ const RecipeCard = ({ dataItem }) => {
 
   return (
     <View style={styles.container}>
-      <SwiperFlatList
-        autoplay
-        autoplayDelay={2}
-        autoplayLoop
-        index={files.length - 1}
-        showPagination
-        data={files}
-        renderItem={({ item }) =>
-          item.media_type === 'image' ? (
-            <Image
-              key={item.filename}
-              style={styles.image}
-              source={{ uri: `${mediaUploads}${item.filename}` }}
-            />
-          ) : item.media_type === 'video' ? (
-            <TouchableOpacity // usePoster hides video so use this to start it
-              disabled={disabled}
-              onPress={() => {
-                videoRef.playAsync()
-                setDisabled(true) // disable touchableOpacity when video is started
-              }}
-            >
-              <Video
-                ref={handleVideoRef}
-                style={styles.image}
-                source={{ uri: `${mediaUploads}${item.filename}` }}
-                useNativeControls
-                resizeMode='contain'
-                usePoster
-                posterSource={{ uri: `${mediaUploads}${item.screenshot}` }}
-              />
-            </TouchableOpacity>
-          ) : (
-            <View>File not supported</View>
-          )
-        }
-      />
-
-      <View style={styles.content}></View>
-      <View style={styles.likesContainer}>
-        <IconButton icon='heart-outline' color='black' />
-        <Text>0</Text>
+      <View style={styles.carouselContainer}>
+        {done ? (
+          <SwiperFlatList index={0} showPagination>
+            {media}
+          </SwiperFlatList>
+        ) : null}
       </View>
     </View>
   )
@@ -114,6 +143,11 @@ const styles = StyleSheet.create({
   avatar: {
     marginRight: 5,
   },
+  carouselContainer: {
+    flex: 1,
+    alignItems: 'center',
+    height: height * 0.3,
+  },
   container: {
     padding: 10,
     marginTop: 10,
@@ -121,15 +155,15 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     flex: 1,
   },
-  image: {
-    width: '100%',
-    height: 300,
-    aspectRatio: 1,
-  },
   nameContainer: {
     bottom: 15,
     left: 15,
     position: 'absolute',
+  },
+  child: {
+    height: height * 0.3,
+    width: width - 40,
+    justifyContent: 'center',
   },
   recipeName: {
     color: 'white',
@@ -139,18 +173,11 @@ const styles = StyleSheet.create({
     textShadowRadius: 5,
     fontSize: 30,
   },
-  content: {
-    paddingTop: 0,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
   likesContainer: {
+    bottom: 15,
+    right: 15,
+    position: 'absolute',
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
   },
   usernameText: {
     fontWeight: 'bold',
