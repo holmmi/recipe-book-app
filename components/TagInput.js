@@ -9,19 +9,13 @@ const TagInput = ({
   defaultValue,
   label,
   dataSource,
-  register,
   setValue,
   minSearchTermLength,
 }) => {
   const [inputValue, setInputValue] = useState('')
   const [searchResults, setSearchResults] = useState([])
-  const [tags, setTags] = useState([])
+  const [tags, setTags] = useState(defaultValue)
   const { t } = useTranslation()
-
-  useEffect(() => {
-    register(name)
-    setTags(defaultValue)
-  }, [])
 
   useEffect(() => {
     setValue(name, tags)
@@ -30,10 +24,10 @@ const TagInput = ({
   const onChangeText = (text) => {
     setInputValue(text)
     if (text.length >= minSearchTermLength) {
-      const results = dataSource.filter((data) =>
-        t(data.label)
-          .toLowerCase()
-          .startsWith(text.toLowerCase() && !tags.includes(data.value))
+      const results = dataSource.filter(
+        (data) =>
+          t(data.label).toLowerCase().startsWith(text.toLowerCase()) === true &&
+          !tags.includes(data.value) === true
       )
       setSearchResults(results)
     }
@@ -45,10 +39,10 @@ const TagInput = ({
       setSearchResults(results)
     } else {
       if (inputValue.length >= minSearchTermLength) {
-        const results = dataSource.filter((data) =>
-          t(data.label)
-            .toLowerCase()
-            .startsWith(inputValue.toLowerCase() && !tags.includes(data.value))
+        const results = dataSource.filter(
+          (data) =>
+            t(data.label).toLowerCase().startsWith(text.toLowerCase()) ===
+              true && !tags.includes(data.value) === true
         )
         setSearchResults(results)
       }
@@ -119,7 +113,6 @@ TagInput.propTypes = {
   defaultValue: PropTypes.array,
   label: PropTypes.string,
   dataSource: PropTypes.arrayOf(PropTypes.object),
-  register: PropTypes.func,
   setValue: PropTypes.func,
   minSearchTermLength: PropTypes.number,
 }
@@ -132,6 +125,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginTop: 10,
     marginBottom: 10,
+    width: '100%',
   },
   searchResults: {
     maxHeight: 100,

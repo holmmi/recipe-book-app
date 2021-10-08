@@ -16,7 +16,7 @@ const rules = {
   },
 }
 
-const RecipeInstructions = ({ control, name }) => {
+const RecipeInstructions = ({ control, existingMedia, name }) => {
   const { append, fields, remove, swap } = useFieldArray({ control, name })
   const { t } = useTranslation()
 
@@ -134,7 +134,11 @@ const RecipeInstructions = ({ control, name }) => {
       </View>
       <View style={styles.mediaSection}>
         <Subheading>{t('form.newRecipe.addMedia')}</Subheading>
-        <Multimedia control={control} name='media' />
+        <Multimedia
+          control={control}
+          defaultValues={existingMedia}
+          name='media'
+        />
       </View>
     </View>
   )
@@ -142,6 +146,7 @@ const RecipeInstructions = ({ control, name }) => {
 
 RecipeInstructions.propTypes = {
   control: PropTypes.any,
+  existingMedia: PropTypes.arrayOf(PropTypes.number),
   name: PropTypes.string,
 }
 

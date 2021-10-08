@@ -57,7 +57,9 @@ const AddRecipe = ({ navigation }) => {
   const onSubmit = async (data) => {
     setUploadStatus({ ...uploadStatus, uploadStarted: true })
 
-    const mediaUris = data.media.map((item) => item.uri)
+    const mediaUris = data.media
+      .filter((item) => !item.removed)
+      .map((item) => item.uri)
     const fileIds =
       mediaUris.length > 0 ? await uploadMultipleFiles(mediaUris) : []
     const description = {
