@@ -31,6 +31,14 @@ const RecipesStack = () => {
           options={{ headerTitle: t('navigation.recipesStack.recipes') }}
         />
         <Stack.Screen
+          name='Login'
+          component={Profile}
+          options={{
+            headerTitle: t('navigation.bottom.login'),
+            headerBackTitleVisible: false,
+          }}
+        />
+        <Stack.Screen
           name='AddRecipe'
           component={AddRecipe}
           options={{
@@ -117,10 +125,15 @@ const Navigation = () => {
             options={{ title: t('navigation.bottom.favorites') }}
           />
         )}
+
         <Tab.Screen
           name='ProfileTab'
           component={Profile}
-          options={{ title: t('navigation.bottom.profile') }}
+          options={{
+            title: isLogged
+              ? t('navigation.bottom.profile')
+              : t('navigation.bottom.login'),
+          }}
         />
       </Tab.Navigator>
     </NavigationContainer>

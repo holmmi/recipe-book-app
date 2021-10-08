@@ -110,6 +110,7 @@ const resources = Object.freeze({
           search: 'Haku',
           recipes: 'Reseptit',
           favorites: 'Suosikit',
+          login: 'Kirjaudu',
         },
         recipesStack: {
           addRecipe: 'Lisää resepti',

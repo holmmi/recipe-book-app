@@ -6,15 +6,13 @@ import { Headline, Button, TextInput, Chip } from 'react-native-paper'
 import { MainContext } from '../context/MainProvider'
 import DropDown from 'react-native-paper-dropdown'
 import useSearchForm from '../hooks/SearchHooks'
-import diets from '../constants/diets'
 import { search } from '../hooks/ApiHooks'
+import DietDropdown from './DietDropdown'
 
 const SearchForm = ({ navigation }) => {
   const { t } = useTranslation()
   const { setSearch } = useContext(MainContext)
   const { inputs, setInputs, handleInputChange } = useSearchForm()
-  const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false)
-  const [dietsValue, setDietsValue] = useState('')
   const [recipeName, setRecipeName] = useState('')
   const [ingredient, setIngredient] = useState('')
   const [time, setTime] = useState('')
@@ -26,16 +24,6 @@ const SearchForm = ({ navigation }) => {
     console.log(results)
     console.log(inputs)
     navigation.navigate('Recipes', results)
-  }
-
-  const resetForm = () => {
-    setInputs({
-      recipe_name: '',
-      diets: '',
-      ingredients: [],
-      time: '',
-    })
-    updateIngredients([])
   }
 
   const addIngredient = () => {
@@ -68,16 +56,6 @@ const SearchForm = ({ navigation }) => {
     )
   }
 
-  //this is needed because value needs to be a string in the dropdown menu...
-  const dietList = diets.map((item) => ({
-    value: item.value.toString(),
-    label: t(item.label),
-  }))
-
-  useEffect(() => {
-    // resetForm()
-  }, [])
-
   return (
     <>
       <Headline style={styles.headline}>
@@ -94,21 +72,7 @@ const SearchForm = ({ navigation }) => {
         }}
       />
 
-      <DropDown
-        label={t('form.search.diet')}
-        mode={'outlined'}
-        visible={showMultiSelectDropDown}
-        style={styles.inputBox}
-        showDropDown={() => setShowMultiSelectDropDown(true)}
-        onDismiss={() => setShowMultiSelectDropDown(false)}
-        value={dietsValue}
-        setValue={(diets) => {
-          setDietsValue(diets)
-          handleInputChange('diets', diets)
-        }}
-        list={dietList}
-        multiSelect
-      />
+      <DietDropdown handleInputChange={handleInputChange} />
 
       <TextInput
         label={t('form.search.ingredients')}

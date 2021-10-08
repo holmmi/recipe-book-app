@@ -21,14 +21,16 @@ const Recipes = ({ navigation, route }) => {
     navigation.setOptions({
       headerRight: () => (
         <>
-          {isLogged && (
-            <IconButton
-              icon='plus-circle-outline'
-              color='white'
-              style={{ marginRight: 10 }}
-              onPress={() => navigation.navigate('AddRecipe')}
-            />
-          )}
+          <IconButton
+            icon='plus-circle-outline'
+            color='white'
+            style={{ marginRight: 10 }}
+            onPress={
+              isLogged
+                ? () => navigation.navigate('AddRecipe')
+                : () => navigation.navigate('Login')
+            }
+          />
         </>
       ),
     })

@@ -30,6 +30,7 @@ const Profile = ({ navigation }) => {
   })
   const [editMode, setEditMode] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [changeAvatar, setChangeAvatar] = useState(false)
   const { t } = useTranslation()
   const {
     control,
@@ -75,6 +76,7 @@ const Profile = ({ navigation }) => {
     if (data?.file) {
       await uploadFileWithTag('avatar', data.file)
     }
+    setChangeAvatar(false)
     setEditMode(false)
     setIsSaving(false)
   }
@@ -95,7 +97,7 @@ const Profile = ({ navigation }) => {
                   reset()
                 }}
               />
-              {editMode && (
+              {(editMode || changeAvatar) && (
                 <IconButton
                   icon='content-save-outline'
                   color='white'
@@ -112,7 +114,7 @@ const Profile = ({ navigation }) => {
         </View>
       ),
     })
-  }, [navigation, editMode, isSaving])
+  }, [navigation, editMode, isSaving, changeAvatar])
 
   return (
     <ScrollView style={styles.container}>
@@ -152,6 +154,8 @@ const Profile = ({ navigation }) => {
       {isLogged && (
         <ProfileDetails
           editMode={editMode}
+          changeAvatar={changeAvatar}
+          setChangeAvatar={setChangeAvatar}
           control={control}
           register={register}
           setValue={setValue}
