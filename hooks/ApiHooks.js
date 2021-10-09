@@ -8,31 +8,26 @@ const apiBaseUrl = 'https://media.mw.metropolia.fi/wbma'
 const useLoadRecipes = (refresh) => {
   const [recipes, setRecipes] = useState([])
 
-  const loadRecipes = async () => {
-    try {
-      const tagResponse = await fetch(`${apiBaseUrl}/tags/${tags.recipes}`)
-      if (tagResponse.ok) {
-        const tagFiles = await tagResponse.json()
-        const files = await Promise.all(
-          tagFiles.map(async (tagFile) => {
-            const fileResponse = await fetch(
-              `${apiBaseUrl}/media/${tagFile.file_id}`
-            )
-            return await fileResponse.json()
-          })
-        )
-        setRecipes(files.sort((a, b) => b.file_id - a.file_id))
+  useEffect(() => {
+    const loadRecipes = async () => {
+      try {
+        const tagResponse = await fetch(`${apiBaseUrl}/tags/${tags.recipes}`)
+        if (tagResponse.ok) {
+          const tagFiles = await tagResponse.json()
+          const files = await Promise.all(
+            tagFiles.map(async (tagFile) => {
+              const fileResponse = await fetch(
+                `${apiBaseUrl}/media/${tagFile.file_id}`
+              )
+              return await fileResponse.json()
+            })
+          )
+          setRecipes(files.sort((a, b) => b.file_id - a.file_id))
+        }
+      } catch (error) {
+        throw error
       }
-    } catch (error) {
-      throw error
     }
-  }
-
-  useEffect(() => {
-    loadRecipes()
-  }, [])
-
-  useEffect(() => {
     if (refresh) {
       setTimeout(() => {
         loadRecipes()

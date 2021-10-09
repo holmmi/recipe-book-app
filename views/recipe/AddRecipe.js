@@ -93,7 +93,7 @@ const AddRecipe = ({ navigation }) => {
       uploadStarted: false,
       isUploaded: false,
     })
-    navigation.navigate('Recipes', { refresh: true })
+    navigation.goBack()
   }
 
   return (

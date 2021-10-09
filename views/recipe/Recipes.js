@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native'
 import React, {
   useCallback,
   useContext,
@@ -10,10 +11,11 @@ import List from '../../components/List'
 import { MainContext } from '../../context/MainProvider'
 import { useLoadRecipes } from '../../hooks/ApiHooks'
 
-const Recipes = ({ navigation, route }) => {
+const Recipes = ({ navigation }) => {
   const { isLogged, userDetails } = useContext(MainContext)
   const [activeTab, setActiveTab] = useState('all')
-  const recipes = useLoadRecipes(route?.params?.refresh)
+  const isFocused = useIsFocused()
+  const recipes = useLoadRecipes(isFocused)
 
   useLayoutEffect(() => {
     navigation.setOptions({
