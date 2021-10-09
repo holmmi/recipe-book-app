@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Platform, StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet, View, TouchableOpacity } from 'react-native'
 import { Avatar, Title, Paragraph, Button } from 'react-native-paper'
 import PropTypes from 'prop-types'
 import { MainContext } from '../context/MainProvider'
@@ -16,6 +16,8 @@ const mediaUploads = 'http://media.mw.metropolia.fi/wbma/uploads/'
 
 const ProfileDetails = ({
   editMode,
+  changeAvatar,
+  setChangeAvatar,
   control,
   register,
   setValue,
@@ -38,7 +40,7 @@ const ProfileDetails = ({
     } else {
       findUserAvatar()
     }
-  }, [editMode, userDetails])
+  }, [editMode, userDetails, changeAvatar])
 
   const getUserInitials = () => {
     if (userDetails?.full_name) {
@@ -112,24 +114,26 @@ const ProfileDetails = ({
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
-        {avatarFile || tempAvatar ? (
-          <Avatar.Image
-            size={128}
-            source={{
-              uri: tempAvatar
-                ? tempAvatar
-                : `${mediaUploads}${avatarFile.thumbnails.w320}`,
-            }}
-          />
-        ) : (
-          <Avatar.Text
-            size={128}
-            color='white'
-            style={styles.textAvatar}
-            label={getUserInitials()}
-          />
-        )}
-        {editMode && (
+        <TouchableOpacity onPress={() => setChangeAvatar(!changeAvatar)}>
+          {avatarFile || tempAvatar ? (
+            <Avatar.Image
+              size={128}
+              source={{
+                uri: tempAvatar
+                  ? tempAvatar
+                  : `${mediaUploads}${avatarFile.thumbnails.w320}`,
+              }}
+            />
+          ) : (
+            <Avatar.Text
+              size={128}
+              color='white'
+              style={styles.textAvatar}
+              label={getUserInitials()}
+            />
+          )}
+        </TouchableOpacity>
+        {(editMode || changeAvatar) && (
           <View style={styles.avatarButtonContainer}>
             <Button
               mode='contained'
@@ -277,6 +281,8 @@ const styles = StyleSheet.create({
 
 ProfileDetails.propTypes = {
   editMode: PropTypes.bool,
+  changeAvatar: PropTypes.bool,
+  setChangeAvatar: PropTypes.func,
   control: PropTypes.any,
   register: PropTypes.func,
   setValue: PropTypes.func,

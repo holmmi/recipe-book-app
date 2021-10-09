@@ -18,6 +18,7 @@ import {
 } from '../../hooks/ApiHooks'
 import Tabs from '../../components/Tabs'
 import RecipeBasicDetails from './RecipeBasicDetails'
+import RecipeCard from '../../components/RecipeCard'
 import { useForm } from 'react-hook-form'
 import RecipeSubstances from './RecipeSubstances'
 import RecipeInstructions from './RecipeInstructions'
@@ -70,6 +71,7 @@ const Recipe = ({ navigation, route }) => {
       ...recipeValues,
     },
   })
+  const filename = route.params.filename
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -251,6 +253,7 @@ const Recipe = ({ navigation, route }) => {
           tabs={tabs}
         />
       </View>
+      <RecipeCard dataItem={{ recipeName, media, filename }}></RecipeCard>
       {tabViews[activeTab]()}
     </View>
   )

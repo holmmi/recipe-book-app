@@ -289,6 +289,77 @@ const deleteFile = async (fileId) => {
   }
 }
 
+const search = async (data, tag) => {
+  try {
+    const response = await fetch(`${apiBaseUrl}/tags/${tag}`, {
+      method: 'GET',
+    })
+
+    // https://stackoverflow.com/a/53606357
+    const checker = (arr, target) => target.every((v) => arr.includes(v))
+
+    if (response.ok) {
+      const files = await response.json()
+      let results = []
+      const diets = data.diets
+        .substring(1)
+        .split(',')
+        .map(function (item) {
+          return parseInt(item, 10)
+        })
+      if (
+        data.recipe_name == '' &&
+        data.diets == '' &&
+        data.ingredients == '' &&
+        data.time == ''
+      ) {
+        return files
+      }
+      for (let index = 0; index < files.length; index++) {
+        const fullRecipe = files[index] //result diet
+        const recipe = JSON.parse(fullRecipe.description) //result diet description field
+        const ingredients = recipe.substances.map((item) => item.substance) //results ingredients
+
+        const checkIngredientmatch = () => {
+          let matches = 0
+          let queries = data.ingredients.length
+          for (const item of ingredients) {
+            for (const query of data.ingredients) {
+              if (item.toLowerCase().includes(query.toLowerCase())) {
+                matches++
+              }
+            }
+          }
+          return matches === queries
+        }
+
+        function checkTimeMatch(queryTime, divergency) {
+          return (
+            queryTime >= recipe.preparationTime - divergency &&
+            queryTime <= recipe.preparationTime + divergency
+          )
+        }
+        //checks that every query item matches current target recipe from result if query field is not empty
+        if (
+          (data.recipe_name == '' ||
+            recipe.recipeName
+              .toLowerCase()
+              .includes(data.recipe_name.toLowerCase())) &&
+          (data.diets == '' || checker(recipe.diets, diets)) &&
+          (data.ingredients == '' || checkIngredientmatch()) &&
+          (data.time == '' || checkTimeMatch(parseInt(data.time), 5))
+        ) {
+          results.push(fullRecipe)
+        }
+      }
+      //console.log('results', results)
+      return results
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 const deleteMultipleFiles = async (fileIds) => {
   try {
     const results = await Promise.all(
@@ -326,6 +397,22 @@ const getFileDetails = async (fileId) => {
       return await response.json()
     }
     return null
+  } catch (error) {
+    throw error
+  }
+}
+
+const getRecipeFiles = async (fileIds) => {
+  let files = []
+  try {
+    for (const id of fileIds) {
+      const response = await fetch(`${apiBaseUrl}/media/${id}`)
+      if (response.ok) {
+        files.push(await response.json())
+      }
+    }
+
+    return files
   } catch (error) {
     throw error
   }
@@ -383,6 +470,8 @@ export {
   uploadMultipleFiles,
   uploadFileWithDescriptionAndTag,
   deleteFile,
+  search,
+  getRecipeFiles,
   deleteMultipleFiles,
   updateFileDescription,
   getMultipleFileDetails,

@@ -1,8 +1,16 @@
 import React from 'react'
-import { SafeAreaView, StyleSheet } from 'react-native'
+import PropTypes from 'prop-types'
+import { SafeAreaView, StyleSheet, View, ScrollView } from 'react-native'
+import SearchForm from '../../components/SearchForm'
 
-const Search = () => {
-  return <SafeAreaView style={styles.container}></SafeAreaView>
+const Search = ({ navigation }) => {
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.searchContainer}>
+        <SearchForm navigation={navigation} />
+      </View>
+    </ScrollView>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -10,6 +18,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ccc',
   },
+  searchContainer: {
+    flex: 1,
+    padding: 10,
+    margin: 10,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    justifyContent: 'flex-start',
+  },
 })
+
+Search.propTypes = {
+  navigation: PropTypes.object,
+}
 
 export default Search
