@@ -365,6 +365,48 @@ const search = async (data, tag) => {
   }
 }
 
+const deleteMultipleFiles = async (fileIds) => {
+  try {
+    const results = await Promise.all(
+      fileIds.map(async (fileId) => await deleteFile(fileId))
+    )
+    return results
+  } catch (error) {
+    throw error
+  }
+}
+
+const updateFileDescription = async (fileId, data) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const response = await fetch(`${apiBaseUrl}/media/${fileId}`, {
+      headers: {
+        'x-access-token': userToken,
+        'Content-Type': 'application/json',
+      },
+      method: 'PUT',
+      body: JSON.stringify({
+        description: data,
+      }),
+    })
+    return response.ok
+  } catch (error) {
+    throw error
+  }
+}
+
+const getFileDetails = async (fileId) => {
+  try {
+    const response = await fetch(`${apiBaseUrl}/media/${fileId}`)
+    if (response.ok) {
+      return await response.json()
+    }
+    return null
+  } catch (error) {
+    throw error
+  }
+}
+
 const getRecipeFiles = async (fileIds) => {
   let files = []
   try {
@@ -376,6 +418,16 @@ const getRecipeFiles = async (fileIds) => {
     }
 
     return files
+  } catch (error) {
+    throw error
+  }
+}
+
+const getMultipleFileDetails = async (fileIds) => {
+  try {
+    return await Promise.all(
+      fileIds.map(async (fileId) => await getFileDetails(fileId))
+    )
   } catch (error) {
     throw error
   }
@@ -425,4 +477,7 @@ export {
   deleteFile,
   search,
   getRecipeFiles,
+  deleteMultipleFiles,
+  updateFileDescription,
+  getMultipleFileDetails,
 }

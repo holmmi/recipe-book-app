@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useState } from 'react'
+import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import {
   Button,
@@ -10,10 +10,18 @@ import {
 import PropTypes from 'prop-types'
 import { MainContext } from '../../context/MainProvider'
 import { useTranslation } from 'react-i18next'
-import { deleteFile } from '../../hooks/ApiHooks'
+import {
+  deleteFile,
+  deleteMultipleFiles,
+  updateFileDescription,
+  uploadMultipleFiles,
+} from '../../hooks/ApiHooks'
 import Tabs from '../../components/Tabs'
 import RecipeBasicDetails from './RecipeBasicDetails'
 import RecipeCard from '../../components/RecipeCard'
+import { useForm } from 'react-hook-form'
+import RecipeSubstances from './RecipeSubstances'
+import RecipeInstructions from './RecipeInstructions'
 
 const tabs = [
   {
@@ -31,13 +39,39 @@ const tabs = [
 ]
 
 const Recipe = ({ navigation, route }) => {
-  const { media } = JSON.parse(route.params?.description)
+  const {
+    authorDetails,
+    recipeName,
+    preparationTime,
+    doseAmount,
+    diets,
+    substances,
+    instructions,
+    media,
+  } = JSON.parse(route.params?.description)
 
   const { isLogged, userDetails } = useContext(MainContext)
   const [editMode, setEditMode] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [activeTab, setActiveTab] = useState('basicDetails')
   const { t } = useTranslation()
+  const [recipeValues, setRecipeValues] = useState({
+    authorDetails,
+    recipeName,
+    preparationTime,
+    doseAmount,
+    diets,
+    substances,
+    instructions,
+    existingMedia: [...media],
+    media: [],
+  })
+  const { control, handleSubmit, getValues, reset, setValue } = useForm({
+    defaultValues: {
+      ...recipeValues,
+    },
+  })
+  const filename = route.params.filename
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -52,23 +86,43 @@ const Recipe = ({ navigation, route }) => {
         <>
           {isLogged && userDetails?.user_id === route?.params?.user_id && (
             <>
-              <IconButton
-                icon='pencil'
-                color='white'
-                style={styles.authorActions}
-              />
-              <IconButton
-                icon='delete'
-                color='white'
-                style={styles.authorActions}
-                onPress={() => setShowConfirmation(true)}
-              />
+              {!editMode ? (
+                <>
+                  <IconButton
+                    icon='pencil'
+                    color='white'
+                    style={styles.authorActions}
+                    onPress={() => setEditMode(true)}
+                  />
+                  <IconButton
+                    icon='delete'
+                    color='white'
+                    style={styles.authorActions}
+                    onPress={() => setShowConfirmation(true)}
+                  />
+                </>
+              ) : (
+                <>
+                  <IconButton
+                    icon='close-circle-outline'
+                    color='white'
+                    style={styles.authorActions}
+                    onPress={onResetForm}
+                  />
+                  <IconButton
+                    icon='content-save'
+                    color='white'
+                    style={styles.authorActions}
+                    onPress={handleSubmit(onSaveRecipe)}
+                  />
+                </>
+              )}
             </>
           )}
         </>
       ),
     })
-  }, [])
+  }, [editMode])
 
   const deleteRecipe = async () => {
     const fileIds = [...media, route.params.file_id]
@@ -82,8 +136,90 @@ const Recipe = ({ navigation, route }) => {
   }
 
   const tabViews = {
-    basicDetails: () => <RecipeBasicDetails dataItem={route.params} />,
+    basicDetails: () => {
+      const { authorDetails, recipeName, preparationTime, diets, doseAmount } =
+        recipeValues
+      return (
+        <RecipeBasicDetails
+          basicDetails={{
+            authorDetails,
+            recipeName,
+            preparationTime,
+            diets,
+            doseAmount,
+          }}
+          control={control}
+          editMode={editMode}
+          getValues={getValues}
+          setValue={setValue}
+        />
+      )
+    },
+    instructions: () => (
+      <RecipeInstructions
+        control={control}
+        editMode={editMode}
+        instructions={recipeValues.instructions}
+        existingMedia={recipeValues.existingMedia}
+      />
+    ),
+    substances: () => (
+      <RecipeSubstances
+        control={control}
+        editMode={editMode}
+        substances={recipeValues.substances}
+      />
+    ),
   }
+
+  const onResetForm = () => {
+    reset({ ...recipeValues })
+    setEditMode(false)
+  }
+
+  const onSaveRecipe = async (data) => {
+    const newFiles = data.media.filter(
+      (item) => !item.removed && item?.uri.startsWith('file')
+    )
+    const newFileIds = await uploadMultipleFiles(
+      newFiles.map((newFile) => newFile.uri)
+    )
+    const removedFiles = data.media.filter(
+      (item) => item.removed && item?.fileId
+    )
+    await deleteMultipleFiles(
+      removedFiles.map((removedFile) => removedFile.fileId)
+    )
+    const existingFileIds = data.media
+      .filter((item) => !item.removed && item?.fileId)
+      .map((existingFileId) => existingFileId.fileId)
+
+    const updatableDetails = {
+      ...data,
+      media: [...existingFileIds, ...newFileIds],
+      authorDetails: { ...userDetails },
+    }
+    delete updatableDetails.existingMedia
+
+    if (
+      await updateFileDescription(
+        route.params.file_id,
+        JSON.stringify(updatableDetails)
+      )
+    ) {
+      setEditMode(false)
+      setRecipeValues({
+        ...data,
+        existingMedia: [...existingFileIds, ...newFileIds],
+        media: [],
+        authorDetails: { ...userDetails },
+      })
+    }
+  }
+
+  useEffect(() => {
+    reset({ ...recipeValues })
+  }, [recipeValues])
 
   return (
     <View style={styles.container}>
@@ -117,8 +253,8 @@ const Recipe = ({ navigation, route }) => {
           tabs={tabs}
         />
       </View>
+      <RecipeCard dataItem={{ recipeName, media, filename }}></RecipeCard>
       {tabViews[activeTab]()}
-      <RecipeCard dataItem={route.params}></RecipeCard>
     </View>
   )
 }
@@ -130,6 +266,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: 'white',
   },
   tabContainer: {
     flexDirection: 'row',

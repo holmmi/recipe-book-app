@@ -1,12 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react'
-import {
-  StyleSheet,
-  View,
-  ImageBackground,
-  Dimensions,
-  Image,
-  TouchableOpacity,
-} from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, View, ImageBackground, Dimensions } from 'react-native'
 import { IconButton, Text } from 'react-native-paper'
 import PropTypes from 'prop-types'
 import { getRecipeFiles } from '../hooks/ApiHooks'
@@ -65,17 +58,17 @@ const RecipeCard = ({ dataItem }) => {
 
   // end screen orientation
 
-  const addMedia = (newFiles, recipe) => {
+  const addMedia = (newFiles) => {
     setMedia(
       newFiles.map((item, index) =>
         index === 0 ? (
           <ImageBackground
-            key={item.filename}
+            key={dataItem.filename}
             style={styles.child}
             source={{ uri: `${mediaUploads}${dataItem.filename}` }}
           >
             <View style={styles.nameContainer}>
-              <Text style={styles.recipeName}>{recipe.recipeName}</Text>
+              <Text style={styles.recipeName}>{dataItem.recipeName}</Text>
             </View>
             <View style={styles.likesContainer}>
               <IconButton icon='heart-outline' color='white' />
@@ -92,6 +85,7 @@ const RecipeCard = ({ dataItem }) => {
           <Video
             key={item.filename}
             style={styles.child}
+            defaultControlsVisible={true}
             ref={handleVideoRef}
             source={{ uri: `${mediaUploads}${item.filename}` }}
             useNativeControls
@@ -110,11 +104,12 @@ const RecipeCard = ({ dataItem }) => {
 
   const getMedia = async () => {
     try {
-      const newRecipe = await JSON.parse(dataItem.description)
+      console.log(dataItem)
 
-      let media = await getRecipeFiles(newRecipe.media)
-      media.unshift(dataItem)
-      addMedia(media, newRecipe)
+      let newMedia = await getRecipeFiles(dataItem.media)
+      newMedia.unshift(dataItem.filename)
+      addMedia(newMedia)
+      console.log(newMedia)
 
       setDone(true)
     } catch (error) {
@@ -130,7 +125,11 @@ const RecipeCard = ({ dataItem }) => {
     <View style={styles.container}>
       <View style={styles.carouselContainer}>
         {done ? (
-          <SwiperFlatList index={0} showPagination>
+          <SwiperFlatList
+            index={0}
+            showPagination
+            paginationActiveColor={'tomato'}
+          >
             {media}
           </SwiperFlatList>
         ) : null}
@@ -140,9 +139,6 @@ const RecipeCard = ({ dataItem }) => {
 }
 
 const styles = StyleSheet.create({
-  avatar: {
-    marginRight: 5,
-  },
   carouselContainer: {
     flex: 1,
     alignItems: 'center',
@@ -151,8 +147,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     marginTop: 10,
-    marginBottom: 10,
-    borderRadius: 0,
+    marginBottom: 0,
     flex: 1,
   },
   nameContainer: {

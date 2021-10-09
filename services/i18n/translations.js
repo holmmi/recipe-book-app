@@ -138,6 +138,9 @@ const resources = Object.freeze({
       },
       recipe: {
         deleteConfirmation: 'Haluatko varmasti poistaa tämän reseptin?',
+        diets: 'Erityisruokavaliot',
+        doseAmount: 'Annosmäärä',
+        preparationTime: 'Valmistusaika (min)',
       },
       singleImage: {
         choosePhoto: 'Valitse kuva',
