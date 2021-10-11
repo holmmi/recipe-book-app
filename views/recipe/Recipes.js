@@ -16,7 +16,7 @@ const Recipes = ({ navigation, route }) => {
   const { isLogged, userDetails, search, setSearch } = useContext(MainContext)
   const [activeTab, setActiveTab] = useState('all')
   const isFocused = useIsFocused()
-  const recipes = useLoadRecipes(isFocused)
+  const { recipes, pullRefresh, setPullRefresh } = useLoadRecipes(isFocused)
   const { t } = useTranslation()
 
   useLayoutEffect(() => {
@@ -69,10 +69,11 @@ const Recipes = ({ navigation, route }) => {
           {t('recipe.removeSearch')}
         </Button>
       )}
-
       <List
         navigation={navigation}
+        onRefresh={() => setPullRefresh(true)}
         recipes={filterRecipes()}
+        refreshing={pullRefresh}
         route={route}
         setActiveTab={setActiveTab}
       />

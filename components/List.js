@@ -17,7 +17,14 @@ const tabs = [
   },
 ]
 
-const List = ({ navigation, recipes, route, setActiveTab }) => {
+const List = ({
+  navigation,
+  onRefresh,
+  recipes,
+  refreshing,
+  route,
+  setActiveTab,
+}) => {
   const { isLogged } = useContext(MainContext)
 
   return (
@@ -39,6 +46,8 @@ const List = ({ navigation, recipes, route, setActiveTab }) => {
           )}
         </>
       }
+      onRefresh={onRefresh}
+      refreshing={refreshing}
       keyExtractor={(item) => item.file_id.toString()}
     />
   )
@@ -56,7 +65,9 @@ const styles = StyleSheet.create({
 
 List.propTypes = {
   navigation: PropTypes.object,
+  onRefresh: PropTypes.func,
   recipes: PropTypes.arrayOf(PropTypes.object),
+  refreshing: PropTypes.bool,
   route: PropTypes.object,
   setActiveTab: PropTypes.func,
 }

@@ -1,16 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Platform, StyleSheet, View, TouchableOpacity } from 'react-native'
 import { Avatar, Title, Paragraph, Button } from 'react-native-paper'
+import { useFocusEffect } from '@react-navigation/native'
 import PropTypes from 'prop-types'
 import { MainContext } from '../context/MainProvider'
 import {
   checkIfUsernameExists,
   deleteFile,
+  getFavouritesByUser,
+  getLikesByUser,
+  getPublicationsByUserAndTag,
   getUserAvatar,
 } from '../hooks/ApiHooks'
 import { useTranslation } from 'react-i18next'
 import * as ImagePicker from 'expo-image-picker'
 import Input from './Input'
+import tags from '../constants/tags'
 
 const mediaUploads = 'http://media.mw.metropolia.fi/wbma/uploads/'
 
@@ -26,6 +31,11 @@ const ProfileDetails = ({
   const { userDetails } = useContext(MainContext)
   const [avatarFile, setAvatarFile] = useState(null)
   const [tempAvatar, setTempAvatar] = useState(null)
+  const [statistics, setStatistics] = useState({
+    favourites: 0,
+    likes: 0,
+    publications: 0,
+  })
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -41,6 +51,19 @@ const ProfileDetails = ({
       findUserAvatar()
     }
   }, [editMode, userDetails, changeAvatar])
+
+  useFocusEffect(() => {
+    const getStatistics = async () => {
+      setStatistics({
+        favourites: (await getFavouritesByUser()).length,
+        likes: (await getLikesByUser()).length,
+        publications: (
+          await getPublicationsByUserAndTag(userDetails.user_id, tags.recipes)
+        ).length,
+      })
+    }
+    getStatistics()
+  })
 
   const getUserInitials = () => {
     if (userDetails?.full_name) {
@@ -213,15 +236,15 @@ const ProfileDetails = ({
       <View style={styles.socialContainer}>
         <View style={styles.socialItem}>
           <Title style={styles.title}>{t('profile.publications')}</Title>
-          <Paragraph>0</Paragraph>
+          <Paragraph>{statistics.publications}</Paragraph>
         </View>
         <View style={styles.socialItem}>
           <Title style={styles.title}>{t('profile.favorites')}</Title>
-          <Paragraph>0</Paragraph>
+          <Paragraph>{statistics.favourites}</Paragraph>
         </View>
         <View style={styles.socialItem}>
           <Title style={styles.title}>{t('profile.likes')}</Title>
-          <Paragraph>0</Paragraph>
+          <Paragraph>{statistics.likes}</Paragraph>
         </View>
       </View>
     </View>
