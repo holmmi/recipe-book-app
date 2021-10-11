@@ -13,7 +13,7 @@ const rules = {
       message: 'form.newRecipe.amountMissing',
     },
     pattern: {
-      value: /^\d+$/,
+      value: /^(\d+|\d+,\d+)$/,
       message: 'form.newRecipe.amountNumbersOnly',
     },
   },
