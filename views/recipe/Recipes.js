@@ -73,6 +73,7 @@ const Recipes = ({ navigation, route }) => {
       <List
         navigation={navigation}
         recipes={filterRecipes()}
+        route={route}
         setActiveTab={setActiveTab}
       />
     </View>

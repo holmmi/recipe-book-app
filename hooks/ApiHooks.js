@@ -352,7 +352,6 @@ const search = async (data, tag) => {
           results.push(fullRecipe)
         }
       }
-      //console.log('results', results)
       return results
     }
   } catch (error) {
@@ -402,22 +401,6 @@ const getFileDetails = async (fileId) => {
   }
 }
 
-const getRecipeFiles = async (fileIds) => {
-  let files = []
-  try {
-    for (const id of fileIds) {
-      const response = await fetch(`${apiBaseUrl}/media/${id}`)
-      if (response.ok) {
-        files.push(await response.json())
-      }
-    }
-
-    return files
-  } catch (error) {
-    throw error
-  }
-}
-
 const getMultipleFileDetails = async (fileIds) => {
   try {
     return await Promise.all(
@@ -445,13 +428,72 @@ const addLike = async (fileId) => {
   }
 }
 
+const deleteLike = async (fileId) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const response = await fetch(`${apiBaseUrl}/ratings/file/${fileId}`, {
+      method: 'DELETE',
+      headers: {
+        'x-access-token': userToken,
+      },
+    })
+    return response.ok
+  } catch (error) {
+    throw error
+  }
+}
+
 const getLikes = async (fileId) => {
   try {
     const response = await fetch(`${apiBaseUrl}/ratings/file/${fileId}`)
     if (response.ok) {
-      return await response.json().length
+      return await response.json()
     }
-    return 0
+    return []
+  } catch (error) {
+    throw error
+  }
+}
+
+const getFavourites = async (fileId) => {
+  try {
+    const response = await fetch(`${apiBaseUrl}/favourites/file/${fileId}`)
+    if (response.ok) {
+      return await response.json()
+    }
+    return []
+  } catch (error) {
+    throw error
+  }
+}
+
+const addFavourite = async (fileId) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const response = await fetch(`${apiBaseUrl}/favourites`, {
+      method: 'POST',
+      headers: {
+        'x-access-token': userToken,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ file_id: fileId }),
+    })
+    return response.ok
+  } catch (error) {
+    throw error
+  }
+}
+
+const deleteFavourite = async (fileId) => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const response = await fetch(`${apiBaseUrl}/favourites/file/${fileId}`, {
+      method: 'DELETE',
+      headers: {
+        'x-access-token': userToken,
+      },
+    })
+    return response.ok
   } catch (error) {
     throw error
   }
@@ -471,8 +513,13 @@ export {
   uploadFileWithDescriptionAndTag,
   deleteFile,
   search,
-  getRecipeFiles,
   deleteMultipleFiles,
   updateFileDescription,
   getMultipleFileDetails,
+  addLike,
+  deleteLike,
+  getLikes,
+  getFavourites,
+  addFavourite,
+  deleteFavourite,
 }

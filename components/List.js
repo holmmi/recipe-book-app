@@ -17,7 +17,7 @@ const tabs = [
   },
 ]
 
-const List = ({ navigation, recipes, setActiveTab }) => {
+const List = ({ navigation, recipes, route, setActiveTab }) => {
   const { isLogged } = useContext(MainContext)
 
   return (
@@ -28,7 +28,7 @@ const List = ({ navigation, recipes, setActiveTab }) => {
       )}
       ListHeaderComponent={
         <>
-          {isLogged && (
+          {isLogged && route.name === 'Recipes' && (
             <View style={styles.tabContainer}>
               <Tabs
                 defaultValue='all'
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
 List.propTypes = {
   navigation: PropTypes.object,
   recipes: PropTypes.arrayOf(PropTypes.object),
+  route: PropTypes.object,
   setActiveTab: PropTypes.func,
 }
 

@@ -253,7 +253,14 @@ const Recipe = ({ navigation, route }) => {
           tabs={tabs}
         />
       </View>
-      <RecipeCard dataItem={{ recipeName, media, filename }}></RecipeCard>
+      <RecipeCard
+        dataItem={{
+          recipeName,
+          media,
+          filename,
+          fileId: route.params?.file_id,
+        }}
+      ></RecipeCard>
       {tabViews[activeTab]()}
     </View>
   )

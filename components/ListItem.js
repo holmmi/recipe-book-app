@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Avatar, Card, IconButton, Subheading, Text } from 'react-native-paper'
 import PropTypes from 'prop-types'
-import { getUserAvatar, getUserDetails } from '../hooks/ApiHooks'
+import { getLikes, getUserAvatar, getUserDetails } from '../hooks/ApiHooks'
 
 const mediaUploads = 'http://media.mw.metropolia.fi/wbma/uploads/'
 
@@ -12,11 +12,13 @@ const ListItem = ({ dataItem, navigation }) => {
 
   const [userDetails, setUserDetails] = useState(null)
   const [avatar, setAvatar] = useState(null)
+  const [recipeLikes, setRecipeLikes] = useState([])
 
   useEffect(() => {
     const getPublisherDetails = async () => {
       setUserDetails(await getUserDetails(recipe.user_id))
       setAvatar(await getUserAvatar(recipe.user_id))
+      setRecipeLikes(await getLikes(recipe.file_id))
     }
     getPublisherDetails()
   }, [recipe])
@@ -42,7 +44,7 @@ const ListItem = ({ dataItem, navigation }) => {
       />
       <View style={styles.likesContainer}>
         <IconButton icon='heart-outline' color='black' />
-        <Text>0</Text>
+        <Text>{recipeLikes.length}</Text>
       </View>
       <Card.Content style={styles.cardContent}>
         <Subheading>{recipeName}</Subheading>
