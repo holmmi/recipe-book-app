@@ -1,5 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { StyleSheet, View, ImageBackground, Dimensions } from 'react-native'
+import {
+  StyleSheet,
+  View,
+  ImageBackground,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native'
 import { IconButton, Text } from 'react-native-paper'
 import PropTypes from 'prop-types'
 import {
@@ -18,14 +24,19 @@ import { MainContext } from '../context/MainProvider'
 
 const mediaUploads = 'http://media.mw.metropolia.fi/wbma/uploads/'
 
-const { width, height } = Dimensions.get('window')
-
 const RecipeCard = ({ dataItem }) => {
   const [media, setMedia] = useState([])
   const [videoRef, setVideoRef] = useState(null)
   const [recipeLikes, setRecipeLikes] = useState([])
   const [recipeFavourites, setRecipeFavourites] = useState([])
   const { userDetails } = useContext(MainContext)
+  const [disabled, setDisabled] = useState(false)
+  const [dims, setDims] = useState({ width: 0, height: 0 })
+
+  const getDims = () => {
+    const { width, height } = Dimensions.get('window')
+    setDims({ width, height })
+  }
 
   const handleVideoRef = (component) => {
     setVideoRef(component)
@@ -35,9 +46,13 @@ const RecipeCard = ({ dataItem }) => {
     try {
       await ScreenOrientation.unlockAsync()
     } catch (error) {
-      console.error('unlock', error.message)
+      throw error
     }
   }
+
+  Dimensions.addEventListener('change', () => {
+    getDims()
+  })
 
   const lock = async () => {
     try {
@@ -45,14 +60,15 @@ const RecipeCard = ({ dataItem }) => {
         ScreenOrientation.OrientationLock.PORTRAIT_UP
       )
     } catch (error) {
-      console.error('lock', error.message)
+      throw error
     }
   }
 
   useEffect(() => {
+    getDims()
     unlock()
+
     const orientSub = ScreenOrientation.addOrientationChangeListener((evt) => {
-      console.log('orientation', evt)
       if (evt.orientationInfo.orientation > 2) {
         // show video in fullscreen
         showVideoInFullscreen()
@@ -65,6 +81,14 @@ const RecipeCard = ({ dataItem }) => {
     }
   }, [videoRef])
   // end screen orientation
+
+  const showVideoInFullscreen = async () => {
+    try {
+      if (videoRef) await videoRef.presentFullscreenPlayer()
+    } catch (error) {
+      throw error
+    }
+  }
 
   useEffect(() => {
     const getMedia = async () => {
@@ -112,13 +136,16 @@ const RecipeCard = ({ dataItem }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.carouselContainer}>
+      <View style={[{ height: dims.height * 0.2 }, styles.carouselContainer]}>
         <SwiperFlatList index={0} showPagination paginationActiveColor='tomato'>
           {media.map((item, index) =>
             index === 0 ? (
               <ImageBackground
                 key={dataItem.filename}
-                style={styles.child}
+                style={[
+                  { height: dims.height * 0.25, width: dims.width - 40 },
+                  styles.child,
+                ]}
                 source={{ uri: `${mediaUploads}${dataItem.filename}` }}
               >
                 <View style={styles.nameContainer}>
@@ -141,21 +168,35 @@ const RecipeCard = ({ dataItem }) => {
             ) : item.media_type === 'image' && index > 0 ? (
               <ImageBackground
                 key={item.filename}
-                style={styles.child}
+                style={[
+                  { height: dims.height * 0.25, width: dims.width - 40 },
+                  styles.child,
+                ]}
                 source={{ uri: `${mediaUploads}${item.filename}` }}
               ></ImageBackground>
             ) : item.media_type === 'video' ? (
-              <Video
-                key={item.filename}
-                style={styles.child}
-                defaultControlsVisible={true}
-                ref={handleVideoRef}
-                source={{ uri: `${mediaUploads}${item.filename}` }}
-                useNativeControls
-                resizeMode='contain'
-                usePoster
-                posterSource={{ uri: `${mediaUploads}${item.screenshot}` }}
-              />
+              <TouchableOpacity
+                key={item.filename} // usePoster hides video so use this to start it
+                disabled={disabled}
+                onPress={() => {
+                  videoRef.playAsync()
+                  setDisabled(true) // disable touchableOpacity when video is started
+                }}
+              >
+                <Video
+                  style={[
+                    { height: dims.height * 0.25, width: dims.width - 40 },
+                    styles.child,
+                  ]}
+                  defaultControlsVisible={true}
+                  ref={handleVideoRef}
+                  source={{ uri: `${mediaUploads}${item.filename}` }}
+                  useNativeControls
+                  resizeMode='contain'
+                  usePoster
+                  posterSource={{ uri: `${mediaUploads}${item.screenshot}` }}
+                />
+              </TouchableOpacity>
             ) : (
               <View style={styles.child} key={item.filename}>
                 <Text>File not supported</Text>
@@ -172,7 +213,6 @@ const styles = StyleSheet.create({
   carouselContainer: {
     flex: 1,
     alignItems: 'center',
-    height: height * 0.3,
   },
   container: {
     padding: 10,
@@ -186,8 +226,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   child: {
-    height: height * 0.3,
-    width: width - 40,
     justifyContent: 'center',
   },
   recipeName: {

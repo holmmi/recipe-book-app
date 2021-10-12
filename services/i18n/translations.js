@@ -27,9 +27,6 @@ const resources = Object.freeze({
       error: {
         notification: 'Ilmoitus',
       },
-      recipe: {
-        removeSearch: 'Poista hakutulokset',
-      },
       form: {
         login: {
           usernameLabel: 'Käyttäjänimi',
@@ -100,6 +97,7 @@ const resources = Object.freeze({
           diet: 'Ruokavalio (voit valita useamman)',
           ingredients: 'Ainekset (voit valita useamman)',
           preparationTime: 'Valmistusaika (min)',
+          removeSearch: 'Poista hakutulokset',
           searchButton: 'Hae',
           add: 'Lisää ainesosa',
         },

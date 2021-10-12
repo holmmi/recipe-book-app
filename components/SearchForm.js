@@ -1,10 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { Headline, Button, TextInput, Chip } from 'react-native-paper'
 import { MainContext } from '../context/MainProvider'
-import DropDown from 'react-native-paper-dropdown'
 import useSearchForm from '../hooks/SearchHooks'
 import { search } from '../hooks/ApiHooks'
 import DietDropdown from './DietDropdown'
@@ -21,29 +20,27 @@ const SearchForm = ({ navigation }) => {
   const onSubmit = async () => {
     setSearch(true)
     const results = await search(inputs, 'recipe-book')
-    console.log(results)
-    console.log(inputs)
     navigation.navigate('Recipes', results)
   }
 
   const addIngredient = () => {
-    if (inputs.ingredients.indexOf(ingredient) === -1) {
-      let list = inputs.ingredients.concat(ingredient)
+    if (inputs.ingredients.indexOf(ingredient) === -1 && ingredient !== '') {
+      const list = inputs.ingredients.concat(ingredient)
       updateIngredients(list)
       setIngredient('')
     }
   }
 
   const deleteIngredient = (item) => {
-    let index = inputs.ingredients.indexOf(item)
-    let list = inputs.ingredients.splice(index, 1)
+    const index = inputs.ingredients.indexOf(item)
+    const list = inputs.ingredients.splice(index, 1)
     updateIngredients(list)
   }
 
   const updateIngredients = (list) => {
     handleInputChange('ingredients', list)
     setChips(
-      list.map((item, index) => (
+      list.map((item) => (
         <Chip
           key={item}
           icon='information'
@@ -63,6 +60,7 @@ const SearchForm = ({ navigation }) => {
       </Headline>
 
       <TextInput
+        mode='outlined'
         label={t('form.search.recipeName')}
         value={recipeName}
         style={styles.inputBox}
@@ -75,6 +73,7 @@ const SearchForm = ({ navigation }) => {
       <DietDropdown handleInputChange={handleInputChange} />
 
       <TextInput
+        mode='outlined'
         label={t('form.search.ingredients')}
         value={ingredient}
         style={styles.inputBox}
@@ -84,7 +83,7 @@ const SearchForm = ({ navigation }) => {
         }}
       />
 
-      <>{chips}</>
+      <View style={styles.chips}>{chips}</View>
 
       <Button
         mode='contained'
@@ -98,6 +97,7 @@ const SearchForm = ({ navigation }) => {
       </Button>
 
       <TextInput
+        mode='outlined'
         label={t('form.search.preparationTime')}
         keyboardType='number-pad'
         value={time}
@@ -131,6 +131,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 100,
   },
+  chips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 4,
+  },
   inputBox: {
     marginTop: 10,
     marginBottom: 10,
@@ -138,10 +143,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   chip: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    margin: 5,
   },
 })
 

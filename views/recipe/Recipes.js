@@ -62,11 +62,10 @@ const Recipes = ({ navigation, route }) => {
           mode='contained'
           uppercase={false}
           color='#F6AE2D'
-          style={styles.button}
           labelStyle={{ color: 'white' }}
           onPress={() => setSearch(false)}
         >
-          {t('recipe.removeSearch')}
+          {t('form.search.removeSearch')}
         </Button>
       )}
 
