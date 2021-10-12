@@ -92,7 +92,11 @@ const Navigation = () => {
                 iconName = 'search'
                 break
               case 'ProfileTab':
-                iconName = 'person-outline'
+                if (!isLogged) {
+                  iconName = 'login'
+                } else {
+                  iconName = 'person-outline'
+                }
                 break
               default:
                 break
