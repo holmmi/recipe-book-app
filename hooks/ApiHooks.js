@@ -499,6 +499,53 @@ const deleteFavourite = async (fileId) => {
   }
 }
 
+const useLoadFavourites = (refresh) => {
+  const [favourites, setFavourites] = useState([])
+
+  useEffect(() => {
+    const loadFavourites = async () => {
+      try {
+        const userToken = await SecureStore.getItemAsync('userToken')
+        const favouriteResponse = await fetch(`${apiBaseUrl}/favourites`, {
+          headers: {
+            'x-access-token': userToken,
+          },
+        })
+        if (favouriteResponse.ok) {
+          const favouriteFiles = await favouriteResponse.json()
+
+          const tagResponse = await fetch(`${apiBaseUrl}/tags/${tags.recipes}`)
+          let tagIds = []
+          if (tagResponse.ok) {
+            tagIds = (await tagResponse.json()).map((item) => item.file_id)
+          }
+
+          const favIds = favouriteFiles.map((item) => item.file_id)
+
+          const fileIds = favIds.filter((item) => tagIds.includes(item))
+
+          const files = await Promise.all(
+            fileIds.map(async (fileId) => {
+              const fileResponse = await fetch(`${apiBaseUrl}/media/${fileId}`)
+              return await fileResponse.json()
+            })
+          )
+
+          setFavourites(files.sort((a, b) => b.file_id - a.file_id))
+        }
+      } catch (error) {
+        throw error
+      }
+    }
+    if (refresh) {
+      setTimeout(() => {
+        loadFavourites()
+      }, 500)
+    }
+  }, [refresh])
+  return favourites
+}
+
 export {
   useLoadRecipes,
   apiLogin,
@@ -522,4 +569,5 @@ export {
   getFavourites,
   addFavourite,
   deleteFavourite,
+  useLoadFavourites,
 }
