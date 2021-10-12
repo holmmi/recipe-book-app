@@ -1,5 +1,5 @@
 import React, { useContext, useLayoutEffect, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, View } from 'react-native'
 import {
   Button,
   Dialog,
@@ -36,7 +36,7 @@ const AddRecipe = ({ navigation }) => {
     uploadStarted: false,
     isUploaded: false,
   })
-  const { userDetails } = useContext(MainContext)
+  const { userDetails, isKeyboardVisible } = useContext(MainContext)
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -124,16 +124,19 @@ const AddRecipe = ({ navigation }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-
       <ProgressSteps
+        hidden={isKeyboardVisible}
         activeLabelColor='#F6AE2D'
         activeStepIconBorderColor='#F6AE2D'
         activeStepNumColor='#F6AE2D'
         completedProgressBarColor='#F6AE2D'
         completedStepIconColor='#F6AE2D'
         progressBarColor='#ccc'
+        topOffset={isKeyboardVisible ? -50 : 30}
+        marginBottom={isKeyboardVisible ? -50 : 50}
       >
         <ProgressStep
+          removeBtnRow={isKeyboardVisible}
           label={t('progress.newRecipe.basicDetails')}
           nextBtnText={t('progress.nextButton')}
           onNext={() =>
@@ -155,6 +158,7 @@ const AddRecipe = ({ navigation }) => {
           />
         </ProgressStep>
         <ProgressStep
+          removeBtnRow={isKeyboardVisible}
           label={t('progress.newRecipe.substances')}
           nextBtnText={t('progress.nextButton')}
           previousBtnText={t('progress.previousButton')}
@@ -166,6 +170,7 @@ const AddRecipe = ({ navigation }) => {
           <RecipeSubstances name='substances' control={control} />
         </ProgressStep>
         <ProgressStep
+          removeBtnRow={isKeyboardVisible}
           label={t('progress.newRecipe.instructions')}
           finishBtnText={t('progress.finishButton')}
           previousBtnText={t('progress.previousButton')}

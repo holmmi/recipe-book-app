@@ -50,7 +50,7 @@ const Recipe = ({ navigation, route }) => {
     media,
   } = JSON.parse(route.params?.description)
 
-  const { isLogged, userDetails } = useContext(MainContext)
+  const { isLogged, userDetails, isKeyboardVisible } = useContext(MainContext)
   const [editMode, setEditMode] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [activeTab, setActiveTab] = useState('basicDetails')
@@ -246,21 +246,27 @@ const Recipe = ({ navigation, route }) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
-      <View style={styles.tabContainer}>
-        <Tabs
-          defaultValue='basicDetails'
-          onValueChange={(value) => setActiveTab(value)}
-          tabs={tabs}
-        />
-      </View>
-      <RecipeCard
-        dataItem={{
-          recipeName,
-          media,
-          filename,
-          fileId: route.params?.file_id,
-        }}
-      ></RecipeCard>
+
+      {!isKeyboardVisible && (
+        <>
+          <View style={styles.tabContainer}>
+            <Tabs
+              defaultValue='basicDetails'
+              onValueChange={(value) => setActiveTab(value)}
+              tabs={tabs}
+            />
+          </View>
+          <RecipeCard
+            dataItem={{
+              recipeName,
+              media,
+              filename,
+              fileId: route.params?.file_id,
+            }}
+          ></RecipeCard>
+        </>
+      )}
+
       {tabViews[activeTab]()}
     </View>
   )

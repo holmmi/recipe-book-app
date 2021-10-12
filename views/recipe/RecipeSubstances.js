@@ -1,5 +1,10 @@
 import React from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native'
 import { Text } from 'react-native-paper'
 import EditRecipeSubstances from '../../components/RecipeSubstances'
 import PropTypes from 'prop-types'
@@ -7,17 +12,22 @@ import PropTypes from 'prop-types'
 const RecipeSubstances = ({ control, editMode, substances }) => {
   return (
     <ScrollView style={styles.container}>
-      {editMode ? (
-        <EditRecipeSubstances control={control} name='substances' />
-      ) : (
-        <View style={styles.substancesContainer}>
-          {substances.map((substance, index) => (
-            <Text key={index} style={styles.text}>
-              {substance.amount} {substance.unit} {substance.substance}
-            </Text>
-          ))}
-        </View>
-      )}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        {editMode ? (
+          <EditRecipeSubstances control={control} name='substances' />
+        ) : (
+          <View style={styles.substancesContainer}>
+            {substances.map((substance, index) => (
+              <Text key={index} style={styles.text}>
+                {substance.amount} {substance.unit} {substance.substance}
+              </Text>
+            ))}
+          </View>
+        )}
+      </KeyboardAvoidingView>
     </ScrollView>
   )
 }

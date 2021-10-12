@@ -1,5 +1,10 @@
 import React from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native'
 import { Text } from 'react-native-paper'
 import PropTypes from 'prop-types'
 import EditRecipeInstructions from '../../components/RecipeInstructions'
@@ -12,21 +17,26 @@ const RecipeInstructions = ({
 }) => {
   return (
     <ScrollView style={styles.container}>
-      {editMode ? (
-        <EditRecipeInstructions
-          control={control}
-          existingMedia={existingMedia}
-          name='instructions'
-        />
-      ) : (
-        <View style={styles.instructionsContainer}>
-          {instructions.map((instruction, index) => (
-            <Text key={index} style={styles.text}>
-              {index + 1}. {instruction.text}
-            </Text>
-          ))}
-        </View>
-      )}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+      >
+        {editMode ? (
+          <EditRecipeInstructions
+            control={control}
+            existingMedia={existingMedia}
+            name='instructions'
+          />
+        ) : (
+          <View style={styles.instructionsContainer}>
+            {instructions.map((instruction, index) => (
+              <Text key={index} style={styles.text}>
+                {index + 1}. {instruction.text}
+              </Text>
+            ))}
+          </View>
+        )}
+      </KeyboardAvoidingView>
     </ScrollView>
   )
 }

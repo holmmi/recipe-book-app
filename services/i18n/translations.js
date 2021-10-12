@@ -41,7 +41,7 @@ const resources = Object.freeze({
           addMedia: 'Kuvat ja videot',
           addMediaButton: 'Valitse mediaa',
           addRow: 'Lisää rivi',
-          amountMissing: 'Syötä annosmäärä',
+          amountMissing: 'Syötä ainemäärä',
           amountNumbersOnly: 'Ainoastaan numerot ovat sallittu ainemäärässä',
           chooseCoverPhoto: 'Valitse kuva valmiista annoksesta',
           coverPhotoMissing: 'Kuva valmiista annoksesta puutuu',

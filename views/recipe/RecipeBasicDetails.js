@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import React, { useContext, useEffect, useState } from 'react'
+import {
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native'
 import { Avatar, Caption, Text } from 'react-native-paper'
 import PropTypes from 'prop-types'
 import { getUserAvatar } from '../../hooks/ApiHooks'
@@ -8,6 +13,7 @@ import Input from '../../components/Input'
 import Tags from '../../components/Tags'
 import diets from '../../constants/diets'
 import TagInput from '../../components/TagInput'
+import { MainContext } from '../../context/MainProvider'
 
 const mediaUploads = 'https://media.mw.metropolia.fi/wbma/uploads/'
 
@@ -48,6 +54,7 @@ const RecipeBasicDetails = ({
   setValue,
 }) => {
   const [authorAvatar, setAuthorAvatar] = useState(null)
+  const { isKeyboardVisible } = useContext(MainContext)
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -59,18 +66,23 @@ const RecipeBasicDetails = ({
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.avatarContainer}>
-        {authorAvatar && (
-          <Avatar.Image
-            size={120}
-            style={styles.avatar}
-            source={{ uri: `${mediaUploads}${authorAvatar.thumbnails.w320}` }}
-          />
-        )}
-        <Text style={styles.usernameText}>
-          {basicDetails?.authorDetails?.username}
-        </Text>
-      </View>
+      {!isKeyboardVisible && (
+        <View style={styles.avatarContainer}>
+          {authorAvatar && (
+            <Avatar.Image
+              size={120}
+              style={styles.avatar}
+              source={{
+                uri: `${mediaUploads}${authorAvatar.thumbnails.w320}`,
+              }}
+            />
+          )}
+          <Text style={styles.usernameText}>
+            {basicDetails?.authorDetails?.username}
+          </Text>
+        </View>
+      )}
+
       <View style={styles.detailsContainer}>
         {editMode && (
           <Input

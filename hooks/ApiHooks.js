@@ -7,6 +7,7 @@ const apiBaseUrl = 'https://media.mw.metropolia.fi/wbma'
 
 const useLoadRecipes = (refresh) => {
   const [recipes, setRecipes] = useState([])
+  const [pullRefresh, setPullRefresh] = useState(false)
 
   useEffect(() => {
     const loadRecipes = async () => {
@@ -24,18 +25,19 @@ const useLoadRecipes = (refresh) => {
           )
           setRecipes(files.sort((a, b) => b.file_id - a.file_id))
         }
+        setPullRefresh(false)
       } catch (error) {
         throw error
       }
     }
-    if (refresh) {
+    if (pullRefresh || refresh) {
       setTimeout(() => {
         loadRecipes()
       }, 500)
     }
-  }, [refresh])
+  }, [pullRefresh, refresh])
 
-  return recipes
+  return { recipes, pullRefresh, setPullRefresh }
 }
 
 const apiLogin = async (data) => {
@@ -411,6 +413,36 @@ const getMultipleFileDetails = async (fileIds) => {
   }
 }
 
+const getPublicationsByUserAndTag = async (userId, tag) => {
+  try {
+    const response = await fetch(`${apiBaseUrl}/tags/${tag}`)
+    if (response.ok) {
+      const files = await response.json()
+      return files.filter((file) => file.user_id === userId)
+    }
+    return []
+  } catch (error) {
+    throw error
+  }
+}
+
+const getLikesByUser = async () => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const response = await fetch(`${apiBaseUrl}/ratings`, {
+      headers: {
+        'x-access-token': userToken,
+      },
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+    return []
+  } catch (error) {
+    throw error
+  }
+}
+
 const addLike = async (fileId) => {
   try {
     const userToken = await SecureStore.getItemAsync('userToken')
@@ -545,6 +577,22 @@ const useLoadFavourites = (refresh) => {
   }, [refresh])
   return favourites
 }
+const getFavouritesByUser = async () => {
+  try {
+    const userToken = await SecureStore.getItemAsync('userToken')
+    const response = await fetch(`${apiBaseUrl}/favourites`, {
+      headers: {
+        'x-access-token': userToken,
+      },
+    })
+    if (response.ok) {
+      return await response.json()
+    }
+    return []
+  } catch (error) {
+    throw error
+  }
+}
 
 export {
   useLoadRecipes,
@@ -563,6 +611,8 @@ export {
   deleteMultipleFiles,
   updateFileDescription,
   getMultipleFileDetails,
+  getPublicationsByUserAndTag,
+  getLikesByUser,
   addLike,
   deleteLike,
   getLikes,
@@ -570,4 +620,5 @@ export {
   addFavourite,
   deleteFavourite,
   useLoadFavourites,
+  getFavouritesByUser,
 }

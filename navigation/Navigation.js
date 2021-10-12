@@ -59,6 +59,51 @@ const RecipesStack = () => {
   )
 }
 
+const FavouritesStack = () => {
+  const { t } = useTranslation()
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: 'tomato' },
+        headerTitleStyle: { color: 'white' },
+      }}
+    >
+      <Stack.Group>
+        <Stack.Screen
+          name='Favorites'
+          component={Favorites}
+          options={{ headerTitle: t('navigation.bottom.favorites') }}
+        />
+        <Stack.Screen
+          name='Login'
+          component={Profile}
+          options={{
+            headerTitle: t('navigation.bottom.login'),
+            headerBackTitleVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name='AddRecipe'
+          component={AddRecipe}
+          options={{
+            headerTitle: t('navigation.recipesStack.addRecipe'),
+            headerBackTitleVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name='Recipe'
+          component={Recipe}
+          options={{
+            headerTitle: t('navigation.recipesStack.recipeView'),
+            headerBackTitleVisible: false,
+          }}
+        />
+      </Stack.Group>
+    </Stack.Navigator>
+  )
+}
+
 const SearchStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -125,8 +170,11 @@ const Navigation = () => {
         {isLogged && (
           <Tab.Screen
             name='FavoritesTab'
-            component={Favorites}
-            options={{ title: t('navigation.bottom.favorites') }}
+            component={FavouritesStack}
+            options={{
+              title: t('navigation.bottom.favorites'),
+              headerShown: false,
+            }}
           />
         )}
 
