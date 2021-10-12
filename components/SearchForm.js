@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useTranslation } from 'react-i18next'
-import { StyleSheet, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, View } from 'react-native'
 import { Headline, Button, TextInput, Chip } from 'react-native-paper'
 import { MainContext } from '../context/MainProvider'
 import useSearchForm from '../hooks/SearchHooks'
@@ -54,7 +54,10 @@ const SearchForm = ({ navigation }) => {
   }
 
   return (
-    <>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
       <Headline style={styles.headline}>
         {t('navigation.bottom.search')}
       </Headline>
@@ -118,11 +121,14 @@ const SearchForm = ({ navigation }) => {
       >
         {t('form.search.searchButton')}
       </Button>
-    </>
+    </KeyboardAvoidingView>
   )
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   headline: {
     textAlign: 'center',
   },

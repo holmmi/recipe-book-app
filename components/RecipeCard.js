@@ -90,15 +90,25 @@ const RecipeCard = ({ dataItem }) => {
     }
   }
 
-  useEffect(() => {
-    const getMedia = async () => {
+  const getMedia = async () => {
+    try {
       const newMedia = await getMultipleFileDetails(dataItem.media)
       newMedia.unshift(dataItem.filename)
       setMedia(newMedia)
       setRecipeLikes(await getLikes(dataItem.fileId))
       setRecipeFavourites(await getFavourites(dataItem.fileId))
+    } catch (error) {
+      throw error
     }
+  }
+
+  useEffect(() => {
     getMedia()
+    return () => {
+      setMedia({})
+      setRecipeLikes(0)
+      setRecipeFavourites(0)
+    }
   }, [])
 
   const isRecipeInFavourites = useCallback(() => {
