@@ -23,6 +23,14 @@ const resources = Object.freeze({
       diets: {
         glutenFree: 'Gluteeniton',
         lactoseFree: 'Laktoositon',
+        sugarFree: 'Sokeriton',
+        noEggs: 'Munaton',
+        vegetarian: 'Kasvisruoka',
+        vegan: 'Vegaaninen',
+        noMilk: 'Maidoton',
+        lowCarbs: 'Vähähiilihydraattinen',
+        lowFat: 'Vähärasvainen',
+        lowLactose: 'Vähälaktoosinen',
       },
       error: {
         notification: 'Ilmoitus',
