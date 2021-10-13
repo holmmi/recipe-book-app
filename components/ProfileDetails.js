@@ -28,7 +28,7 @@ const ProfileDetails = ({
   setValue,
   unregister,
 }) => {
-  const { userDetails } = useContext(MainContext)
+  const { isLogged, userDetails } = useContext(MainContext)
   const [avatarFile, setAvatarFile] = useState(null)
   const [tempAvatar, setTempAvatar] = useState(null)
   const [statistics, setStatistics] = useState({
@@ -62,7 +62,9 @@ const ProfileDetails = ({
         ).length,
       })
     }
-    getStatistics()
+    if (isLogged) {
+      getStatistics()
+    }
   })
 
   const getUserInitials = () => {

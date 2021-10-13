@@ -6,7 +6,6 @@ const MainContext = React.createContext()
 
 const MainProvider = (props) => {
   const [isLogged, setIsLogged] = useState(false)
-  const [search, setSearch] = useState(false)
   const [userDetails, setUserDetails] = useState({})
   const [updateUserDetails, setUpdateUserDetails] = useState(true)
 
@@ -29,8 +28,6 @@ const MainProvider = (props) => {
       value={{
         isLogged,
         setIsLogged,
-        search,
-        setSearch,
         userDetails,
         setUserDetails,
         setUpdateUserDetails,

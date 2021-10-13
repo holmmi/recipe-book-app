@@ -11,6 +11,7 @@ import Search from '../views/search/Search'
 import Favorites from '../views/favorites/Favorites'
 import Profile from '../views/profile/Profile'
 import Recipe from '../views/recipe/Recipe'
+import SearchResults from '../views/search/SearchResults'
 
 const Stack = createNativeStackNavigator()
 
@@ -60,10 +61,25 @@ const RecipesStack = () => {
 }
 
 const SearchStack = () => {
+  const { t } = useTranslation()
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name='Search' component={Search} />
-      <Stack.Screen name='RecipesSearch' component={RecipesStack} />
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: 'tomato' },
+        headerTitleStyle: { color: 'white' },
+      }}
+    >
+      <Stack.Screen
+        name='Search'
+        component={Search}
+        options={{ headerTitle: t('navigation.searchStack.search') }}
+      />
+      <Stack.Screen
+        name='SearchResults'
+        component={SearchResults}
+        options={{ headerTitle: t('navigation.searchStack.searchResults') }}
+      />
     </Stack.Navigator>
   )
 }
@@ -71,7 +87,7 @@ const SearchStack = () => {
 const Tab = createBottomTabNavigator()
 
 const Navigation = () => {
-  const { isLogged, setAddingRecipe } = useContext(MainContext)
+  const { isLogged } = useContext(MainContext)
 
   const { t } = useTranslation()
 
@@ -116,7 +132,7 @@ const Navigation = () => {
         <Tab.Screen
           name='SearchTab'
           component={SearchStack}
-          options={{ title: t('navigation.bottom.search') }}
+          options={{ title: t('navigation.bottom.search'), headerShown: false }}
         />
         {isLogged && (
           <Tab.Screen
