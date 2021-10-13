@@ -49,15 +49,6 @@ const SearchResults = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Button
-        mode='contained'
-        uppercase={false}
-        color='#F6AE2D'
-        labelStyle={{ color: 'white' }}
-        onPress={() => navigation.goBack()}
-        title={t('form.search.removeSearch')}
-      ></Button>
-
       <List navigation={navigation} recipes={filteredRecipes()} route={route} />
     </View>
   )

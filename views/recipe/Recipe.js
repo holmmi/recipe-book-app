@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import {
+  ActivityIndicator,
   Button,
   Dialog,
   IconButton,
@@ -53,6 +54,7 @@ const Recipe = ({ navigation, route }) => {
   const { isLogged, userDetails, isKeyboardVisible } = useContext(MainContext)
   const [editMode, setEditMode] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [activeTab, setActiveTab] = useState('basicDetails')
   const { t } = useTranslation()
   const [recipeValues, setRecipeValues] = useState({
@@ -86,35 +88,44 @@ const Recipe = ({ navigation, route }) => {
         <>
           {isLogged && userDetails?.user_id === route?.params?.user_id && (
             <>
-              {!editMode ? (
-                <>
-                  <IconButton
-                    icon='pencil'
-                    color='white'
-                    style={styles.authorActions}
-                    onPress={() => setEditMode(true)}
-                  />
-                  <IconButton
-                    icon='delete'
-                    color='white'
-                    style={styles.authorActions}
-                    onPress={() => setShowConfirmation(true)}
-                  />
-                </>
+              {isSaving ? (
+                <ActivityIndicator
+                  color='white'
+                  style={styles.activityIndicator}
+                />
               ) : (
                 <>
-                  <IconButton
-                    icon='close-circle-outline'
-                    color='white'
-                    style={styles.authorActions}
-                    onPress={onResetForm}
-                  />
-                  <IconButton
-                    icon='content-save'
-                    color='white'
-                    style={styles.authorActions}
-                    onPress={handleSubmit(onSaveRecipe)}
-                  />
+                  {!editMode ? (
+                    <>
+                      <IconButton
+                        icon='pencil'
+                        color='white'
+                        style={styles.authorActions}
+                        onPress={() => setEditMode(true)}
+                      />
+                      <IconButton
+                        icon='delete'
+                        color='white'
+                        style={styles.authorActions}
+                        onPress={() => setShowConfirmation(true)}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <IconButton
+                        icon='close-circle-outline'
+                        color='white'
+                        style={styles.authorActions}
+                        onPress={onResetForm}
+                      />
+                      <IconButton
+                        icon='content-save'
+                        color='white'
+                        style={styles.authorActions}
+                        onPress={handleSubmit(onSaveRecipe)}
+                      />
+                    </>
+                  )}
                 </>
               )}
             </>
@@ -122,7 +133,7 @@ const Recipe = ({ navigation, route }) => {
         </>
       ),
     })
-  }, [editMode])
+  }, [editMode, isSaving])
 
   const deleteRecipe = async () => {
     const fileIds = [...media, route.params.file_id]
@@ -178,6 +189,7 @@ const Recipe = ({ navigation, route }) => {
   }
 
   const onSaveRecipe = async (data) => {
+    setIsSaving(true)
     const newFiles = data.media.filter(
       (item) => !item.removed && item?.uri.startsWith('file')
     )
@@ -219,6 +231,7 @@ const Recipe = ({ navigation, route }) => {
 
   useEffect(() => {
     reset({ ...recipeValues })
+    setIsSaving(false)
   }, [recipeValues])
 
   return (
@@ -273,6 +286,9 @@ const Recipe = ({ navigation, route }) => {
 }
 
 const styles = StyleSheet.create({
+  activityIndicator: {
+    marginRight: 5,
+  },
   authorActions: {
     marginRight: 5,
   },

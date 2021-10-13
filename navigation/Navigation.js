@@ -125,6 +125,14 @@ const SearchStack = () => {
         component={SearchResults}
         options={{ headerTitle: t('navigation.searchStack.searchResults') }}
       />
+      <Stack.Screen
+        name='Recipe'
+        component={Recipe}
+        options={{
+          headerTitle: t('navigation.recipesStack.recipeView'),
+          headerBackTitleVisible: false,
+        }}
+      />
     </Stack.Navigator>
   )
 }

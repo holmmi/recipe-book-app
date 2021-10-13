@@ -69,7 +69,7 @@ const ListItem = ({ dataItem, navigation }) => {
       {isLogged ? (
         <View style={styles.socialsContainer}>
           <IconButton
-            icon={isRecipeLiked() ? 'heart-outline' : 'heart'}
+            icon='heart-outline'
             color={isRecipeLiked() ? 'red' : 'black'}
             onPress={toggleRecipeLike}
           />
