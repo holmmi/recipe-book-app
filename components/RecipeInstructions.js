@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, View } from 'react-native'
 import { Button, Divider, IconButton, Subheading } from 'react-native-paper'
 import { useFieldArray } from 'react-hook-form'
 import PropTypes from 'prop-types'
@@ -37,7 +37,10 @@ const RecipeInstructions = ({ control, existingMedia, name }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
       <Subheading>{t('form.newRecipe.instruction')}</Subheading>
       <Divider />
       {fields.map((field, index) => {
@@ -140,7 +143,7 @@ const RecipeInstructions = ({ control, existingMedia, name }) => {
           name='media'
         />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 

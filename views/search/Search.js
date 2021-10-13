@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { SafeAreaView, StyleSheet, View, ScrollView } from 'react-native'
+import { StyleSheet, View, ScrollView } from 'react-native'
 import SearchForm from '../../components/SearchForm'
 
 const Search = ({ navigation }) => {

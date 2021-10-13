@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Platform, StyleSheet, View, TouchableOpacity } from 'react-native'
+import {
+  Platform,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+} from 'react-native'
 import { Avatar, Title, Paragraph, Button } from 'react-native-paper'
 import { useFocusEffect } from '@react-navigation/native'
 import PropTypes from 'prop-types'
@@ -28,7 +34,7 @@ const ProfileDetails = ({
   setValue,
   unregister,
 }) => {
-  const { userDetails } = useContext(MainContext)
+  const { isLogged, userDetails, isKeyboardVisible } = useContext(MainContext)
   const [avatarFile, setAvatarFile] = useState(null)
   const [tempAvatar, setTempAvatar] = useState(null)
   const [statistics, setStatistics] = useState({
@@ -50,19 +56,32 @@ const ProfileDetails = ({
     } else {
       findUserAvatar()
     }
+    return () => {
+      setTempAvatar(null)
+      setAvatarFile(null)
+    }
   }, [editMode, userDetails, changeAvatar])
 
+  const getStatistics = async () => {
+    return {
+      favourites: (await getFavouritesByUser()).length,
+      likes: (await getLikesByUser()).length,
+      publications: (
+        await getPublicationsByUserAndTag(userDetails.user_id, tags.recipes)
+      ).length,
+    }
+  }
+
   useFocusEffect(() => {
-    const getStatistics = async () => {
-      setStatistics({
-        favourites: (await getFavouritesByUser()).length,
-        likes: (await getLikesByUser()).length,
-        publications: (
-          await getPublicationsByUserAndTag(userDetails.user_id, tags.recipes)
-        ).length,
+    let isMounted = true
+    if (isLogged) {
+      getStatistics().then((data) => {
+        if (isMounted) setStatistics(data)
       })
     }
-    getStatistics()
+    return () => {
+      isMounted = false
+    }
   })
 
   const getUserInitials = () => {
@@ -136,55 +155,57 @@ const ProfileDetails = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.avatarContainer}>
-        <TouchableOpacity onPress={() => setChangeAvatar(!changeAvatar)}>
-          {avatarFile || tempAvatar ? (
-            <Avatar.Image
-              size={128}
-              source={{
-                uri: tempAvatar
-                  ? tempAvatar
-                  : `${mediaUploads}${avatarFile.thumbnails.w320}`,
-              }}
-            />
-          ) : (
-            <Avatar.Text
-              size={128}
-              color='white'
-              style={styles.textAvatar}
-              label={getUserInitials()}
-            />
+      {!isKeyboardVisible && (
+        <View style={styles.avatarContainer}>
+          <TouchableOpacity onPress={() => setChangeAvatar(!changeAvatar)}>
+            {avatarFile || tempAvatar ? (
+              <Avatar.Image
+                size={128}
+                source={{
+                  uri: tempAvatar
+                    ? tempAvatar
+                    : `${mediaUploads}${avatarFile.thumbnails.w320}`,
+                }}
+              />
+            ) : (
+              <Avatar.Text
+                size={128}
+                color='white'
+                style={styles.textAvatar}
+                label={getUserInitials()}
+              />
+            )}
+          </TouchableOpacity>
+          {(editMode || changeAvatar) && (
+            <View style={styles.avatarButtonContainer}>
+              <Button
+                mode='contained'
+                icon='camera'
+                color='#F6AE2D'
+                compact={true}
+                labelStyle={{ color: 'white' }}
+                style={styles.avatarButton}
+                disabled={avatarFile}
+                onPress={chooseAvatar}
+              >
+                {t('avatar.choose')}
+              </Button>
+              <Button
+                mode='contained'
+                icon='close'
+                color='#F6AE2D'
+                compact={true}
+                labelStyle={{ color: 'white' }}
+                style={styles.avatarButton}
+                disabled={!tempAvatar && !avatarFile}
+                onPress={deleteAvatar}
+              >
+                {t('avatar.delete')}
+              </Button>
+            </View>
           )}
-        </TouchableOpacity>
-        {(editMode || changeAvatar) && (
-          <View style={styles.avatarButtonContainer}>
-            <Button
-              mode='contained'
-              icon='camera'
-              color='#F6AE2D'
-              compact={true}
-              labelStyle={{ color: 'white' }}
-              style={styles.avatarButton}
-              disabled={avatarFile}
-              onPress={chooseAvatar}
-            >
-              {t('avatar.choose')}
-            </Button>
-            <Button
-              mode='contained'
-              icon='close'
-              color='#F6AE2D'
-              compact={true}
-              labelStyle={{ color: 'white' }}
-              style={styles.avatarButton}
-              disabled={!tempAvatar && !avatarFile}
-              onPress={deleteAvatar}
-            >
-              {t('avatar.delete')}
-            </Button>
-          </View>
-        )}
-      </View>
+        </View>
+      )}
       <View style={styles.basicInformationContainer}>
         <Title style={styles.title}>{t('profile.username')}</Title>
         {editMode ? (

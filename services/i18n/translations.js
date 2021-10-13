@@ -94,8 +94,8 @@ const resources = Object.freeze({
         },
         search: {
           recipeName: 'Reseptin nimi',
-          diet: 'Ruokavalio (voit valita useamman)',
-          ingredients: 'Ainekset (voit valita useamman)',
+          diets: 'Ruokavalio (voit valita useamman)',
+          substances: 'Ainekset (voit lisätä useamman)',
           preparationTime: 'Valmistusaika (min)',
           removeSearch: 'Poista hakutulokset',
           searchButton: 'Hae',
@@ -114,6 +114,10 @@ const resources = Object.freeze({
           addRecipe: 'Lisää resepti',
           recipes: 'Reseptit',
           recipeView: 'Reseptin tarkastelu',
+        },
+        searchStack: {
+          search: 'Haku',
+          searchResults: 'Hakutulokset',
         },
       },
       profile: {

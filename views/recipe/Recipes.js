@@ -13,7 +13,7 @@ import { MainContext } from '../../context/MainProvider'
 import { useLoadRecipes } from '../../hooks/ApiHooks'
 
 const Recipes = ({ navigation, route }) => {
-  const { isLogged, userDetails, search, setSearch } = useContext(MainContext)
+  const { isLogged, userDetails } = useContext(MainContext)
   const [activeTab, setActiveTab] = useState('all')
   const isFocused = useIsFocused()
   const { recipes, pullRefresh, setPullRefresh } = useLoadRecipes(isFocused)
@@ -39,35 +39,13 @@ const Recipes = ({ navigation, route }) => {
   }, [isLogged])
 
   const filterRecipes = useCallback(() => {
-    if (search) {
-      return activeTab === 'own'
-        ? route.params.filter(
-            (recipe) => recipe.user_id === userDetails.user_id
-          )
-        : route.params
-    } else {
-      if (activeTab === 'own') {
-        return recipes.filter(
-          (recipe) => recipe.user_id === userDetails.user_id
-        )
-      }
-      return recipes
-    }
-  }, [activeTab, recipes, search, route])
+    return activeTab === 'own'
+      ? recipes.filter((recipe) => recipe.user_id === userDetails.user_id)
+      : recipes
+  }, [activeTab, recipes])
 
   return (
     <View style={styles.container}>
-      {search && (
-        <Button
-          mode='contained'
-          uppercase={false}
-          color='#F6AE2D'
-          labelStyle={{ color: 'white' }}
-          onPress={() => setSearch(false)}
-        >
-          {t('form.search.removeSearch')}
-        </Button>
-      )}
       <List
         navigation={navigation}
         onRefresh={() => setPullRefresh(true)}

@@ -41,7 +41,7 @@ const TagInput = ({
       if (inputValue.length >= minSearchTermLength) {
         const results = dataSource.filter(
           (data) =>
-            t(data.label).toLowerCase().startsWith(text.toLowerCase()) ===
+            t(data.label).toLowerCase().startsWith(inputValue.toLowerCase()) ===
               true && !tags.includes(data.value) === true
         )
         setSearchResults(results)
