@@ -29,7 +29,7 @@ const RecipeCard = ({ dataItem }) => {
   const [videoRef, setVideoRef] = useState(null)
   const [recipeLikes, setRecipeLikes] = useState([])
   const [recipeFavourites, setRecipeFavourites] = useState([])
-  const { userDetails } = useContext(MainContext)
+  const { userDetails, isLogged } = useContext(MainContext)
   const [disabled, setDisabled] = useState(false)
   const [dims, setDims] = useState({ width: 0, height: 0 })
 
@@ -161,19 +161,21 @@ const RecipeCard = ({ dataItem }) => {
                 <View style={styles.nameContainer}>
                   <Text style={styles.recipeName}>{dataItem.recipeName}</Text>
                 </View>
-                <View style={styles.socialContainer}>
-                  <IconButton
-                    icon='star-outline'
-                    color={isRecipeInFavourites() ? 'yellow' : 'white'}
-                    onPress={toggleRecipeFavourite}
-                  />
-                  <IconButton
-                    icon='heart-outline'
-                    color={isRecipeLiked() ? 'red' : 'white'}
-                    onPress={toggleRecipeLike}
-                  />
-                  <Text style={styles.recipeName}>{recipeLikes.length}</Text>
-                </View>
+                {isLogged ? (
+                  <View style={styles.socialContainer}>
+                    <IconButton
+                      icon='star-outline'
+                      color={isRecipeInFavourites() ? 'yellow' : 'white'}
+                      onPress={toggleRecipeFavourite}
+                    />
+                    <IconButton
+                      icon='heart-outline'
+                      color={isRecipeLiked() ? 'red' : 'white'}
+                      onPress={toggleRecipeLike}
+                    />
+                    <Text style={styles.recipeName}>{recipeLikes.length}</Text>
+                  </View>
+                ) : null}
               </ImageBackground>
             ) : item.media_type === 'image' && index > 0 ? (
               <ImageBackground
