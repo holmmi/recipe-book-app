@@ -66,19 +66,20 @@ const ListItem = ({ dataItem, navigation }) => {
         source={{ uri: `${mediaUploads}${recipe.filename}` }}
         style={styles.cardCover}
       />
-      {isLogged ? (
-        <View style={styles.socialsContainer}>
-          <IconButton
-            icon='heart-outline'
-            color={isRecipeLiked() ? 'red' : 'black'}
-            onPress={toggleRecipeLike}
-          />
-          <Text>{recipeLikes.length}</Text>
-        </View>
-      ) : null}
-
-      <Card.Content style={styles.cardContent}>
-        <Subheading>{recipeName}</Subheading>
+      <Card.Content style={styles.lowerContainer}>
+        <Card.Content style={styles.recipeName}>
+          <Subheading>{recipeName}</Subheading>
+        </Card.Content>
+        {isLogged ? (
+          <View style={styles.socialsContainer}>
+            <IconButton
+              icon='heart-outline'
+              color={isRecipeLiked() ? 'red' : 'black'}
+              onPress={toggleRecipeLike}
+            />
+            <Text>{recipeLikes.length}</Text>
+          </View>
+        ) : null}
       </Card.Content>
     </Card>
   )
@@ -105,10 +106,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  lowerContainer: {
+    flexDirection: 'row',
+  },
   socialsContainer: {
+    flex: 0.5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  recipeName: {
+    flex: 0.5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
   },
   usernameText: {
     fontWeight: 'bold',
