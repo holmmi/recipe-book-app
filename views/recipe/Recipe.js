@@ -151,7 +151,7 @@ const Recipe = ({ navigation, route }) => {
     const results = await Promise.all(
       fileIds.map(async (fileId) => await deleteFile(fileId))
     )
-    if (isRecipeInFavourites) {
+    if (await Promise(isRecipeInFavourites)) {
       await deleteFavourite(route.params.file_id)
     }
     if (results.every((result) => result === true)) {
