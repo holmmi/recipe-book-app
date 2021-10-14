@@ -73,7 +73,12 @@ const Recipe = ({ navigation, route }) => {
       ...recipeValues,
     },
   })
-  const filename = route.params.filename
+  const [dataItem, setDataItem] = useState({
+    recipeName,
+    media,
+    filename: route.params?.filename,
+    fileId: route.params?.file_id,
+  })
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -226,6 +231,12 @@ const Recipe = ({ navigation, route }) => {
         media: [],
         authorDetails: { ...userDetails },
       })
+      setDataItem({
+        recipeName: data.recipeName,
+        media: [...existingFileIds, ...newFileIds],
+        filename: route.params?.filename,
+        fileId: route.params?.file_id,
+      })
     }
   }
 
@@ -269,14 +280,7 @@ const Recipe = ({ navigation, route }) => {
               tabs={tabs}
             />
           </View>
-          <RecipeCard
-            dataItem={{
-              recipeName,
-              media,
-              filename,
-              fileId: route.params?.file_id,
-            }}
-          ></RecipeCard>
+          <RecipeCard dataItem={dataItem}></RecipeCard>
         </>
       )}
 

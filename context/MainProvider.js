@@ -10,6 +10,7 @@ const MainProvider = (props) => {
   const [userDetails, setUserDetails] = useState({})
   const [updateUserDetails, setUpdateUserDetails] = useState(true)
   const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+  const [addRecipe, setAddRecipe] = useState(false)
 
   useEffect(() => {
     const getUserWithToken = async () => {
@@ -55,6 +56,8 @@ const MainProvider = (props) => {
         setUserDetails,
         setUpdateUserDetails,
         isKeyboardVisible,
+        addRecipe,
+        setAddRecipe,
       }}
     >
       {props.children}

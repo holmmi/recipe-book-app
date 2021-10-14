@@ -1,5 +1,5 @@
 import { useIsFocused } from '@react-navigation/core'
-import React, { useLayoutEffect, useContext, useState } from 'react'
+import React, { useLayoutEffect, useContext, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet, View, ScrollView } from 'react-native'
 import {
@@ -20,8 +20,13 @@ import { useForm } from 'react-hook-form'
 import { updateUserDetails, uploadFileWithTag } from '../../hooks/ApiHooks'
 
 const Profile = ({ navigation }) => {
-  const { isLogged, setIsLogged, setUpdateUserDetails } =
-    useContext(MainContext)
+  const {
+    isLogged,
+    setIsLogged,
+    setUpdateUserDetails,
+    addRecipe,
+    setAddRecipe,
+  } = useContext(MainContext)
   const isFocused = useIsFocused()
   const [showLoginForm, setShowLoginForm] = useState(true)
   const [showErrorDialog, setShowErrorDialog] = useState({
@@ -115,6 +120,13 @@ const Profile = ({ navigation }) => {
       ),
     })
   }, [navigation, editMode, isSaving, changeAvatar])
+
+  useEffect(() => {
+    if (isLogged && addRecipe) {
+      setAddRecipe(false)
+      navigation.navigate('AddRecipe')
+    }
+  }, [isLogged])
 
   return (
     <ScrollView style={styles.container}>

@@ -13,30 +13,11 @@ import { MainContext } from '../../context/MainProvider'
 import { useLoadRecipes } from '../../hooks/ApiHooks'
 
 const Recipes = ({ navigation, route }) => {
-  const { isLogged, userDetails } = useContext(MainContext)
+  const { isLogged, userDetails, setAddRecipe } = useContext(MainContext)
   const [activeTab, setActiveTab] = useState('all')
   const isFocused = useIsFocused()
   const { recipes, pullRefresh, setPullRefresh } = useLoadRecipes(isFocused)
   const { t } = useTranslation()
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <>
-          <IconButton
-            icon='plus-circle-outline'
-            color='white'
-            style={{ marginRight: 10 }}
-            onPress={
-              isLogged
-                ? () => navigation.navigate('AddRecipe')
-                : () => navigation.navigate('Login')
-            }
-          />
-        </>
-      ),
-    })
-  }, [isLogged])
 
   const filterRecipes = useCallback(() => {
     return activeTab === 'own'
@@ -61,7 +42,10 @@ const Recipes = ({ navigation, route }) => {
         onPress={
           isLogged
             ? () => navigation.navigate('AddRecipe')
-            : () => navigation.navigate('Login')
+            : () => {
+                setAddRecipe(true)
+                navigation.navigate('Login')
+              }
         }
       />
     </View>

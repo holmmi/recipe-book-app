@@ -11,11 +11,11 @@ import PropTypes from 'prop-types'
 
 const RecipeSubstances = ({ control, editMode, substances }) => {
   return (
-    <ScrollView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <ScrollView style={styles.container}>
         {editMode ? (
           <EditRecipeSubstances control={control} name='substances' />
         ) : (
@@ -27,8 +27,8 @@ const RecipeSubstances = ({ control, editMode, substances }) => {
             ))}
           </View>
         )}
-      </KeyboardAvoidingView>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   )
 }
 

@@ -35,6 +35,9 @@ const Multimedia = ({ control, defaultValues, name }) => {
       if (status === 'granted') {
         const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 0.5,
         })
         if (!result.cancelled) {
           append({ type: result.type, removed: false, uri: result.uri })
