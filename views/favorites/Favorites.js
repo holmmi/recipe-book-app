@@ -8,7 +8,7 @@ import { useLoadFavourites } from '../../hooks/ApiHooks'
 import PropTypes from 'prop-types'
 
 const Favorites = ({ navigation, route }) => {
-  const { isLogged } = useContext(MainContext)
+  const { isLogged, setAddRecipe } = useContext(MainContext)
   const isFocused = useIsFocused()
   const favorites = useLoadFavourites(isFocused)
 
@@ -23,7 +23,10 @@ const Favorites = ({ navigation, route }) => {
             onPress={
               isLogged
                 ? () => navigation.navigate('AddRecipe')
-                : () => navigation.navigate('Login')
+                : () => {
+                    setAddRecipe(true)
+                    navigation.navigate('Login')
+                  }
             }
           />
         </>
