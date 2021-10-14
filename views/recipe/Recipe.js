@@ -14,7 +14,9 @@ import { useTranslation } from 'react-i18next'
 import {
   deleteFavourite,
   deleteFile,
+  deleteLike,
   deleteMultipleFiles,
+  getLikes,
   updateFileDescription,
   uploadMultipleFiles,
 } from '../../hooks/ApiHooks'
@@ -142,8 +144,15 @@ const Recipe = ({ navigation, route }) => {
   }, [editMode, isSaving])
 
   const isRecipeInFavourites = async () => {
-    const favs = await getFavourites(dataItem.fileId)
+    const favs = await getFavourites(route.params?.file_id)
     return favs.filter((fav) => fav.user_id === userDetails.user_id).length > 0
+  }
+
+  const isRecipeLiked = async () => {
+    const likes = await getLikes(route.params?.file_id)
+    return (
+      likes.filter((like) => like.user_id === userDetails.user_id).length > 0
+    )
   }
 
   const deleteRecipe = async () => {
@@ -153,6 +162,9 @@ const Recipe = ({ navigation, route }) => {
     )
     if (await Promise(isRecipeInFavourites)) {
       await deleteFavourite(route.params.file_id)
+    }
+    if (await Promise(isRecipeLiked)) {
+      await deleteLike(route.params.file_id)
     }
     if (results.every((result) => result === true)) {
       setShowConfirmation(false)
