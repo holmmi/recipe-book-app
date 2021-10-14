@@ -12,6 +12,7 @@ import PropTypes from 'prop-types'
 import { MainContext } from '../../context/MainProvider'
 import { useTranslation } from 'react-i18next'
 import {
+  deleteFavourite,
   deleteFile,
   deleteMultipleFiles,
   updateFileDescription,
@@ -140,11 +141,19 @@ const Recipe = ({ navigation, route }) => {
     })
   }, [editMode, isSaving])
 
+  const isRecipeInFavourites = async () => {
+    const favs = await getFavourites(dataItem.fileId)
+    return favs.filter((fav) => fav.user_id === userDetails.user_id).length > 0
+  }
+
   const deleteRecipe = async () => {
     const fileIds = [...media, route.params.file_id]
     const results = await Promise.all(
       fileIds.map(async (fileId) => await deleteFile(fileId))
     )
+    if (isRecipeInFavourites) {
+      await deleteFavourite(route.params.file_id)
+    }
     if (results.every((result) => result === true)) {
       setShowConfirmation(false)
       navigation.navigate('Recipes', { refresh: route.params.file_id })
